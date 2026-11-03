@@ -1,0 +1,10 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {validateReading,validISODate,validMonth} from '../lib/telemetry.mjs';
+const t={deviceId:'TALON-SOLAR-001',bootId:'aabbccddeeff1122',seq:1,volts:12.8,amps:3.2,watts:40.96,energyWh:30.1,status:'OK'};
+test('valid readings accepted',()=>assert.deepEqual(validateReading(t),t));
+test('bad device rejected',()=>assert.equal(validateReading({...t,deviceId:'X'}),null));
+test('bad values rejected',()=>assert.equal(validateReading({...t,volts:-1}),null));
+test('sensor fault status not accepted as valid measurement',()=>assert.equal(validateReading({...t,status:'SENSOR_FAULT'}),null));
+test('boot id protects counter',()=>assert.equal(validateReading({...t,bootId:'xxx'}),null));
+test('sequence integer required',()=>assert.equal(validateReading({...t,seq:1.5}),null));
+test('month validator',()=>{assert.equal(validMonth('2026-11'),true);assert.equal(validMonth('2026-13'),false)});
+test('date validator',()=>{assert.equal(validISODate('2026-11-03'),true);assert.equal(validISODate('2026-02-30'),false)});

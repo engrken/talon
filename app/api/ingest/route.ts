@@ -2,6 +2,7 @@
 import {database} from '@/lib/db';
 import {digest,secretEqual} from '@/lib/security';
 import {validateHeartbeat,validateReading} from '@/lib/telemetry.mjs';
+import {nextEnergyDeltaWh} from '@/lib/reset.mjs';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function POST(request:Request){
  const auth=request.headers.get('authorization')||'';
@@ -19,8 +20,8 @@ export async function POST(request:Request){
  let inserted=false;
  if(reading){
   const prior=await sql`SELECT energy_wh FROM solar_readings WHERE device_id=${id} AND boot_id=${reading.bootId} ORDER BY seq DESC LIMIT 1`;
-  const previous=prior[0]?Number(prior[0].energy_wh):0;
-  const delta=Math.max(0,reading.energyWh-previous);
+  const previous=prior[0]?Number(prior[0].energy_wh):null;
+  const delta=nextEnergyDeltaWh(previous,reading.energyWh,reading.seq);
   const result=await sql`INSERT INTO solar_readings(device_id,boot_id,seq,volts,amps,watts,energy_wh,delta_wh,status)
    VALUES(${id},${reading.bootId},${reading.seq},${reading.volts},${reading.amps},${reading.watts},${reading.energyWh},${delta},${reading.status})
    ON CONFLICT(device_id,boot_id,seq) DO NOTHING RETURNING id`;

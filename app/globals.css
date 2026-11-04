@@ -46,3 +46,16 @@
 .report-tablewrap th,.report-tablewrap td{white-space:nowrap}
 @media(max-width:960px){.report-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.report-chart-grid{grid-template-columns:1fr}}
 @media(max-width:520px){.report-kpi{padding:13px}.report-kpi strong{font-size:18px}.report-kpi-title{font-size:11px}.report-chart-title{flex-wrap:wrap}.report-chart-area{height:230px}}
+
+
+/* Admin-only telemetry-history reset */
+.data-reset{margin-top:22px;padding-top:20px;border-top:1px solid #dbe6df}
+.data-reset h2{display:flex;align-items:center;gap:9px}
+.data-reset select{display:block;width:100%;padding:11px;margin-top:7px;border:1px solid #cbdcd0;border-radius:9px;background:#fbfdfb;color:#264737}
+.reset-confirmation{background:#fff8f5;border:1px solid #edd0c7;border-radius:12px;padding:15px;margin-top:13px}
+.reset-warning{display:flex;align-items:flex-start;gap:8px;color:#873a2b;font-size:12px;line-height:1.5}
+.reset-acknowledge{display:flex!important;align-items:flex-start;gap:9px;line-height:1.5}
+.reset-acknowledge input{margin:3px 0 0;width:auto!important;flex-shrink:0}
+.reset-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.dangerbutton{background:#ac2d28;color:#fff;border:0;border-radius:9px;font-weight:700;padding:12px 14px;margin-top:10px}
+.dangerbutton:disabled{opacity:.45;cursor:not-allowed}

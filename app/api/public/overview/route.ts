@@ -2,7 +2,7 @@ import { database } from '@/lib/db';
 import { firstDevice, noStore } from '@/lib/public';
 export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function GET(){
- const device=await firstDevice();if(!device)return noStore({device:null,latest:null,daily:[],rates:[]});
+ const device=await firstDevice();if(!device)return noStore({device:null,latest:null,daily:[],rates:[],health:null});
  const sql=database();
  const latest=await sql`SELECT received_at AS observed_at,volts,amps,watts,energy_wh,delta_wh,status
   FROM solar_readings WHERE device_id=${device.id} ORDER BY id DESC LIMIT 1`;
@@ -15,5 +15,7 @@ export async function GET(){
   WHERE r.device_id=${device.id} AND r.received_at>=NOW()-INTERVAL '36 days'
   GROUP BY 1 ORDER BY day DESC LIMIT 35`;
  const rates=await sql`SELECT billing_month,php_per_kwh::float8 AS rate FROM solar_rates ORDER BY billing_month DESC LIMIT 24`;
- return noStore({device,latest:latest[0]||null,daily,rates});
+
+ const health=await sql`SELECT seen_at,firmware,uptime_seconds,free_heap_bytes,wifi_connected,wifi_rssi_dbm,lcd_initialized,sensor_verified,supply_present,sensor_fault,station_status,cloud_last_result,usb_modules_total,usb_ports_total,usb_monitoring FROM solar_device_health WHERE device_id=${device.id} LIMIT 1`;
+ return noStore({device,latest:latest[0]||null,daily,rates,health:health[0]||null});
 }

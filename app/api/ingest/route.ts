@@ -39,13 +39,13 @@ export async function POST(request:Request){
    const recent=await sql`SELECT received_at FROM solar_status_history WHERE device_id=${id} ORDER BY id DESC LIMIT 1`;
    if(!recent.length||Date.now()-new Date(recent[0].received_at).getTime()>=900000)reason='CHECKPOINT';
   }
-  await sql`INSERT INTO solar_device_health(device_id,seen_at,boot_id,seq,firmware,uptime_seconds,free_heap_bytes,wifi_connected,wifi_rssi_dbm,lcd_initialized,sensor_verified,supply_present,sensor_fault,station_status,cloud_last_result,usb_modules_total,usb_ports_total,usb_monitoring)
-   VALUES(${id},NOW(),${heartbeat.bootId},${heartbeat.seq},${h.firmware},${h.uptimeSeconds},${h.freeHeapBytes},${h.wifiConnected},${h.wifiRssiDbm},${h.lcdInitialized},${h.sensorVerified},${h.supplyPresent},${h.fault},${h.stationStatus},${h.cloudLastResult},${h.usbModulesTotal},${h.usbPortsTotal},${h.usbMonitoring})
+  await sql`INSERT INTO solar_device_health(device_id,seen_at,boot_id,seq,firmware,uptime_seconds,free_heap_bytes,wifi_connected,wifi_rssi_dbm,lcd_initialized,sensor_verified,supply_present,sensor_fault,station_status,cloud_last_result)
+   VALUES(${id},NOW(),${heartbeat.bootId},${heartbeat.seq},${h.firmware},${h.uptimeSeconds},${h.freeHeapBytes},${h.wifiConnected},${h.wifiRssiDbm},${h.lcdInitialized},${h.sensorVerified},${h.supplyPresent},${h.fault},${h.stationStatus},${h.cloudLastResult})
    ON CONFLICT(device_id) DO UPDATE SET seen_at=EXCLUDED.seen_at,boot_id=EXCLUDED.boot_id,seq=EXCLUDED.seq,firmware=EXCLUDED.firmware,
    uptime_seconds=EXCLUDED.uptime_seconds,free_heap_bytes=EXCLUDED.free_heap_bytes,wifi_connected=EXCLUDED.wifi_connected,
    wifi_rssi_dbm=EXCLUDED.wifi_rssi_dbm,lcd_initialized=EXCLUDED.lcd_initialized,sensor_verified=EXCLUDED.sensor_verified,
    supply_present=EXCLUDED.supply_present,sensor_fault=EXCLUDED.sensor_fault,station_status=EXCLUDED.station_status,
-   cloud_last_result=EXCLUDED.cloud_last_result,usb_modules_total=EXCLUDED.usb_modules_total,usb_ports_total=EXCLUDED.usb_ports_total,usb_monitoring=EXCLUDED.usb_monitoring
+   cloud_last_result=EXCLUDED.cloud_last_result
    WHERE solar_device_health.seen_at<=EXCLUDED.seen_at`;
   if(reason)await sql`INSERT INTO solar_status_history(device_id,boot_id,seq,firmware,uptime_seconds,wifi_rssi_dbm,lcd_initialized,sensor_verified,supply_present,sensor_fault,station_status,cloud_last_result,event_type)
    VALUES(${id},${heartbeat.bootId},${heartbeat.seq},${h.firmware},${h.uptimeSeconds},${h.wifiRssiDbm},${h.lcdInitialized},${h.sensorVerified},${h.supplyPresent},${h.fault},${h.stationStatus},${h.cloudLastResult},${reason})

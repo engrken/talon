@@ -2,3 +2,17 @@
 
 
 .station-health{margin-top:18px}.health-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}.health-card{border:1px solid var(--line);border-radius:12px;padding:16px;background:#fcfefd;min-height:134px}.health-card-label{display:flex;align-items:center;gap:8px;font-size:12px;color:#6b8174}.health-card-label svg{flex:none}.health-card strong{display:block;font-size:16px;margin:13px 0 7px;overflow-wrap:anywhere}.health-card small{display:block;line-height:1.5;color:#82968b;font-size:11px}.health-card.good{border-left:3px solid #20a474}.health-card.warn{border-left:3px solid #e6aa3a}.health-card.bad{border-left:3px solid #d46b5b}.health-card.unknown{border-left:3px solid #a1aca5}.health-history-title{margin-top:30px}.history-controls{display:flex;gap:8px;align-items:center;font-size:12px;color:#70877b}.history-controls select{background:#fff;border:1px solid var(--line);padding:7px;border-radius:8px;color:var(--ink)}.pagination{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:18px;font-size:12px;color:#71857a}.pagination>div{display:flex;gap:8px}.pagination button{padding:8px 14px;background:#edf5f0;border:1px solid #d6e6dc;border-radius:7px;color:#257253}.pagination button:disabled{opacity:.4;cursor:not-allowed}@media(max-width:950px){.health-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.health-grid{grid-template-columns:1fr}.pagination{flex-wrap:wrap}}
+
+
+/* v5.4.0 – targeted troubleshooting */
+.troubleshooting{margin-top:22px;border-top:1px solid var(--line);padding-top:20px}
+.troubleshoot-head{display:flex;align-items:flex-start;gap:10px;color:#246953}
+.troubleshoot-head h3{font-size:17px;margin:0 0 5px;color:var(--ink)}
+.troubleshoot-head p{font-size:12px;color:#72867f;margin:0 0 15px;line-height:1.5}
+.troubleshoot-items{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:10px}
+.troubleshoot-item{background:#fffaf0;border:1px solid #eddbb2;border-radius:11px;padding:15px}
+.troubleshoot-item-title{display:flex;gap:8px;color:#8e5618;align-items:center}
+.troubleshoot-item-title strong{font-size:14px}
+.troubleshoot-item p{font-size:12px;line-height:1.65;color:#52695d;margin:9px 0 0}
+.troubleshoot-item b{color:#243d32}
+.troubleshoot-clear{display:flex;gap:10px;align-items:center;background:#eef8f1;color:#276b49;padding:14px;border-radius:10px;font-size:12px;line-height:1.6}

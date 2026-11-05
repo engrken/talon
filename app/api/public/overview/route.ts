@@ -16,6 +16,6 @@ export async function GET(){
   GROUP BY 1 ORDER BY day DESC LIMIT 35`;
  const rates=await sql`SELECT billing_month,php_per_kwh::float8 AS rate FROM solar_rates ORDER BY billing_month DESC LIMIT 24`;
 
- const health=await sql`SELECT seen_at,firmware,uptime_seconds,free_heap_bytes,wifi_connected,wifi_rssi_dbm,lcd_initialized,sensor_verified,supply_present,sensor_fault,station_status,cloud_last_result FROM solar_device_health WHERE device_id=${device.id} LIMIT 1`;
+ const health=await sql`SELECT seen_at,firmware,uptime_seconds,free_heap_bytes,wifi_connected,wifi_rssi_dbm,lcd_initialized,sensor_verified,supply_present,sensor_fault,station_status,cloud_last_result,current_status,voltage_status,supply_mode,low_current_estimate FROM solar_device_health WHERE device_id=${device.id} LIMIT 1`;
  return noStore({device,latest:latest[0]||null,daily,rates,health:health[0]||null});
 }

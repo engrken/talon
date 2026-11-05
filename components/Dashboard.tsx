@@ -30,7 +30,7 @@ export default function Dashboard(){
   {error&&<div className="notice">Could not retrieve the cloud data: {error}</div>}
   {!loading&&!overview?.device&&<div className="notice">No station has been provisioned yet. Deploy the database and register the ESP32 through the <a href="/admin">administrator page</a>. The dashboard will update after the first upload.</div>}
   <section className="stats">
-    <Metric icon={<Zap size={18}/>} label="12 V USB bus voltage" value={online&&freshSample&&overview?.health?.sensor_verified!==false&&latest?Number(latest.volts).toFixed(2)+' V':'—'} foot="Not battery state of charge"/>
+    <Metric icon={<Zap size={18}/>} label="Charging supply voltage" value={online&&freshSample&&overview?.health?.sensor_verified!==false&&latest?Number(latest.volts).toFixed(2)+' V':'—'} foot="~5 V experimental / ~12 V operational; not battery SOC"/>
     <Metric icon={<Activity size={18}/>} label="Charging power" value={online&&freshSample&&overview?.health?.sensor_verified!==false&&latest?Number(latest.watts).toFixed(1)+' W':'—'} foot="Measured at USB supply"/>
     <Metric icon={<BatteryCharging size={18}/>} label="Energy delivered today" value={todayWh? (todayWh/1000).toFixed(3)+' kWh': '0.000 kWh'} foot="Power input to the USB converters; approximate during outages"/>
     <Metric icon={<Sun size={18}/>} label="Grid cost equivalent" value={today?.cost_php!=null?peso(Number(today.cost_php)):"Rate not set"} foot={today?.rate!=null?"Monthly rate: ₱"+Number(today.rate).toFixed(2)+"/kWh":"Set rate in admin for this month"}/>

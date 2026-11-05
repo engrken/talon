@@ -54,3 +54,16 @@ CREATE TABLE IF NOT EXISTS solar_status_history (
  event_type TEXT NOT NULL, UNIQUE(device_id,boot_id,seq)
 );
 CREATE INDEX IF NOT EXISTS solar_status_history_device_time_idx ON solar_status_history(device_id,id DESC);
+
+-- v5.6.0 independent sensor and 5V experimental mode diagnostics.
+-- Additive migration: run these on an EXISTING Talon database if needed.
+ALTER TABLE solar_device_health
+  ADD COLUMN IF NOT EXISTS current_status TEXT NOT NULL DEFAULT 'UNKNOWN',
+  ADD COLUMN IF NOT EXISTS voltage_status TEXT NOT NULL DEFAULT 'UNKNOWN',
+  ADD COLUMN IF NOT EXISTS supply_mode TEXT NOT NULL DEFAULT 'UNVERIFIED',
+  ADD COLUMN IF NOT EXISTS low_current_estimate BOOLEAN NOT NULL DEFAULT FALSE;
+ALTER TABLE solar_status_history
+  ADD COLUMN IF NOT EXISTS current_status TEXT NOT NULL DEFAULT 'UNKNOWN',
+  ADD COLUMN IF NOT EXISTS voltage_status TEXT NOT NULL DEFAULT 'UNKNOWN',
+  ADD COLUMN IF NOT EXISTS supply_mode TEXT NOT NULL DEFAULT 'UNVERIFIED',
+  ADD COLUMN IF NOT EXISTS low_current_estimate BOOLEAN NOT NULL DEFAULT FALSE;

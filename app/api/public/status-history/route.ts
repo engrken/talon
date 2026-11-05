@@ -11,7 +11,7 @@ export async function GET(request:Request){
  if(!device)return noStore({rows:[],page,limit,total:0,pages:0});
  const sql=database();
  const count=await sql`SELECT COUNT(*)::int AS total FROM solar_status_history WHERE device_id=${device.id}`;
- const rows=await sql`SELECT received_at,firmware,uptime_seconds,wifi_rssi_dbm,lcd_initialized,sensor_verified,supply_present,sensor_fault,station_status,cloud_last_result,event_type
+ const rows=await sql`SELECT received_at,firmware,uptime_seconds,wifi_rssi_dbm,lcd_initialized,sensor_verified,supply_present,sensor_fault,station_status,cloud_last_result,current_status,voltage_status,supply_mode,low_current_estimate,event_type
   FROM solar_status_history WHERE device_id=${device.id} ORDER BY id DESC LIMIT ${limit} OFFSET ${offset}`;
  const total=Number(count[0]?.total||0);
  return noStore({rows,page,limit,total,pages:Math.ceil(total/limit)});

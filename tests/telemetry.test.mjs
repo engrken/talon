@@ -16,3 +16,19 @@ test('compact v5.4 heartbeat accepted',()=>assert.equal(validateHeartbeat({...h,
 test('reject status conflict',()=>assert.equal(validateHeartbeat({...h,health:{...health,stationStatus:'NO_SUPPLY'}}),null));
 test('reject invalid RSSI',()=>assert.equal(validateHeartbeat({...h,health:{...health,wifiRssiDbm:33}}),null));
 test('valid dates',()=>{assert.equal(validISODate('2026-11-03'),true);assert.equal(validISODate('2026-02-30'),false);assert.equal(validMonth('2026-11'),true);assert.equal(validMonth('2026-13'),false)});
+
+const experimentalHealth={...health,firmware:'5.6.0',currentStatus:'OK',voltageStatus:'OK',supplyMode:'EXPERIMENTAL',lowCurrentEstimate:true,stationStatus:'EXPERIMENTAL'};
+test('5V experimental sample accepted',()=>assert.equal(validateHeartbeat({...h,health:experimentalHealth,reading:{volts:5.1,amps:0.3,watts:1.53,energyWh:1.5,status:'EXPERIMENTAL'}})?.health.supplyMode,'EXPERIMENTAL'));
+test('current fault in experimental supply keeps voltage status valid',()=>{
+ const f={...experimentalHealth,currentStatus:'CHECK',voltageStatus:'OK',sensorVerified:false,fault:'NEG_CURRENT',stationStatus:'SENSOR_UNVERIFIED'};
+ assert.equal(validateHeartbeat({...h,health:f,reading:null})?.health.voltageStatus,'OK');
+});
+test('no 12V low-bus label on verified experimental sample',()=>assert.equal(validateHeartbeat({...h,health:{...experimentalHealth,stationStatus:'LOW_USB_BUS'},reading:{...h.reading,status:'LOW_USB_BUS'}}),null));
+test('independent statuses must be complete and consistent',()=>{
+ assert.equal(validateHeartbeat({...h,health:{...experimentalHealth,voltageStatus:'CHECK'}}),null);
+ assert.equal(validateHeartbeat({...h,health:{...experimentalHealth,lowCurrentEstimate:false}}),null);
+});
+test('no supply requires voltage no-input and UNKNOWN current',()=>{
+ const f={...experimentalHealth,stationStatus:'NO_SUPPLY',supplyMode:'NO_SUPPLY',lowCurrentEstimate:false,currentStatus:'UNKNOWN',voltageStatus:'NO_INPUT',sensorVerified:false,supplyPresent:false,fault:'NO_SUPPLY'};
+ assert.equal(validateHeartbeat({...h,health:f,reading:null})?.health.voltageStatus,'NO_INPUT');
+});

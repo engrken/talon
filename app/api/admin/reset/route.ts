@@ -36,6 +36,7 @@ export async function POST(request:Request){
           (SELECT COUNT(*)::int FROM reset_device) AS devices`;
  const counts=result[0];
  if(Number(counts?.devices)!==1)return Response.json({error:'Registered device not found; nothing was reset.'},{status:404,headers:{'Cache-Control':'no-store'}});
+ console.warn('SECURITY_EVENT TALON_DEVICE_RESET');
  return Response.json({
   ok:true,deviceId:id,deleted:{readings:Number(counts.readings),statusEvents:Number(counts.status_events),healthSnapshots:Number(counts.health_snapshots)},
   preserved:['Device registration and token','Monthly electricity rates','Administrator credentials'],

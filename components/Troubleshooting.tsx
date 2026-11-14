@@ -2,6 +2,7 @@
 import {AlertTriangle,CheckCircle2,Lightbulb} from 'lucide-react';
 type Health={seen_at:string;firmware?:string;lcd_initialized:boolean;sensor_verified:boolean;sensor_fault:string;station_status:string;wifi_rssi_dbm:number;cloud_last_result:string;current_status?:string;voltage_status?:string;supply_mode?:string;low_current_estimate?:boolean};
 type Advice={id:string;title:string;check:string;action:string};
+const guideIssue:Record<string,string>={offline:'offline','no-health':'serial',lcd:'lcd',current:'negative',voltage:'voltage-wrong','no-input':'voltage-noinput','unknown-voltage':'mode',legacy:'serial',lowbus:'mode','weak-wifi':'wifi',cloud:'cloud'};
 export function identifyProblems(h:Health|null|undefined,online:boolean):Advice[]{
  if(!online)return [{id:'offline',title:'ESP32 not reporting to the cloud',
   check:'Confirm the ESP32 has stable power and that its local Wi-Fi access point is visible. Read the local LCD status.',
@@ -46,7 +47,7 @@ export default function Troubleshooting({health,online,lastSeen}:{health:Health|
  const problems=identifyProblems(health,online);
  return <section className="troubleshooting" aria-label="Automatic troubleshooting guidance">
   <div className="troubleshoot-head"><Lightbulb size={19}/><div><h3>Automatic troubleshooting guide</h3><p>Independent signal checks identify the affected channel, but cannot prove a sensor is physically broken.</p></div></div>
-  {problems.length?<div className="troubleshoot-items">{problems.map(p=><article key={p.id} className="troubleshoot-item"><div className="troubleshoot-item-title"><AlertTriangle size={17}/><strong>{p.title}</strong></div><p><b>What to check:</b> {p.check}</p><p><b>What to do:</b> {p.action}</p></article>)}</div>:
+  {problems.length?<div className="troubleshoot-items">{problems.map(p=><article key={p.id} className="troubleshoot-item"><div className="troubleshoot-item-title"><AlertTriangle size={17}/><strong>{p.title}</strong></div><p><b>What to check:</b> {p.check}</p><p><b>What to do:</b> {p.action}</p><a className="troubleshoot-guide-link" href={'/guide#issue-'+(guideIssue[p.id]||'offline')}>Detailed instructions →</a></article>)}</div>:
    <div className="troubleshoot-clear"><CheckCircle2 size={18}/> No confirmed diagnostics in the latest ESP32 report. Experimental 5 V operation is intentional and does not trigger a low-12 V alarm.</div>}
   {health?.supply_mode==='EXPERIMENTAL'&&<p className="fineprint">Experimental 5 V mode: currents below about 200 mA cannot be resolved reliably by the ACS712-30A. The mA display is approximate, rounded to 50 mA; use a shunt monitor for precision.</p>}
   {!online&&lastSeen&&<p className="fineprint">Last cloud contact: {new Date(lastSeen).toLocaleString('en-PH',{timeZone:'Asia/Manila'})}. Remote diagnosis cannot update until the ESP32 reconnects.</p>}

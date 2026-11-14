@@ -25,7 +25,7 @@ export default function StationHealth({health,lastSeen}:{health?:Health|null;las
  const online=!!lastSeen&&now-new Date(lastSeen).getTime()<180000;
  const fresh=!!health?.seen_at&&now-new Date(health.seen_at).getTime()<180000;
  const h=online&&fresh?health:null;
- const fw=h?.firmware?.match(/^(\\d+)\\.(\\d+)\\./);
+ const fw=h?.firmware?.match(/^(\d+)\.(\d+)\./);
  const legacy=!!h&&(!fw||Number(fw[1])<5||(Number(fw[1])===5&&Number(fw[2])<6));
  const mode=h?.supply_mode || 'UNVERIFIED';
  const current=h?.current_status;

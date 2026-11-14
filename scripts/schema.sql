@@ -67,3 +67,25 @@ ALTER TABLE solar_status_history
   ADD COLUMN IF NOT EXISTS voltage_status TEXT NOT NULL DEFAULT 'UNKNOWN',
   ADD COLUMN IF NOT EXISTS supply_mode TEXT NOT NULL DEFAULT 'UNVERIFIED',
   ADD COLUMN IF NOT EXISTS low_current_estimate BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- v5.7.0 optional ACS supply telemetry and authenticated, read-only remote diagnostics.
+ALTER TABLE solar_device_health
+ ADD COLUMN IF NOT EXISTS acs_vcc_monitor_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+ ADD COLUMN IF NOT EXISTS acs_vcc_healthy BOOLEAN NOT NULL DEFAULT FALSE,
+ ADD COLUMN IF NOT EXISTS acs_vcc_v DOUBLE PRECISION NOT NULL DEFAULT 0;
+ALTER TABLE solar_status_history
+ ADD COLUMN IF NOT EXISTS acs_vcc_monitor_enabled BOOLEAN NOT NULL DEFAULT FALSE,
+ ADD COLUMN IF NOT EXISTS acs_vcc_healthy BOOLEAN NOT NULL DEFAULT FALSE,
+ ADD COLUMN IF NOT EXISTS acs_vcc_v DOUBLE PRECISION NOT NULL DEFAULT 0;
+CREATE TABLE IF NOT EXISTS solar_remote_commands (
+ id BIGSERIAL PRIMARY KEY,
+ device_id TEXT NOT NULL REFERENCES solar_devices(id) ON DELETE CASCADE,
+ command TEXT NOT NULL CHECK (command IN ('h','d')),
+ state TEXT NOT NULL DEFAULT 'QUEUED' CHECK (state IN ('QUEUED','CLAIMED','DONE','EXPIRED')),
+ requested_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW()+INTERVAL '3 minutes'),
+ claimed_at TIMESTAMPTZ,
+ completed_at TIMESTAMPTZ,
+ output TEXT
+);
+CREATE INDEX IF NOT EXISTS solar_remote_cmd_device_idx ON solar_remote_commands(device_id,id DESC);

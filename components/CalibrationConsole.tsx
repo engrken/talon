@@ -18,6 +18,8 @@ const HELP = [
   {command:'d',name:'Live raw diagnostics',detail:'Show RAW ADC counts and calibrated mV. When safely grounded, GPIO35 should read near zero.'},
   {command:'g',name:'Calibrate GPIO35 ground zero',detail:'Only after disconnecting the sensor, grounding GPIO35 with all power removed, then powering the ESP32 by USB.'},
   {command:'u',name:'Clear GPIO35 calibration',detail:'Restore the default GPIO35 raw-zero threshold.'},
+  {command:'m 1',name:'Enable sensor VCC compensation',detail:'Only after ACS712 VCC has been safely connected via the 20k/10k divider to GPIO32 and checked with a DMM.'},
+  {command:'m 0',name:'Disable sensor VCC compensation',detail:'Reverts to saved zero calibration without additional supply monitoring.'},
   {command:'z',name:'Calibrate ACS712 no-load zero',detail:'The ACS712 IP+ / IP- current path must carry no current.'},
 ] as const;
 
@@ -128,6 +130,7 @@ export default function CalibrationConsole({adminKey}:{adminKey:string}){
     if(!verified||verifiedKey!==adminKey||!connected||busy||!portRef.current?.writable)return;
     const verb=command.split(' ')[0];
     const prompts:Record<string,string>={
+      'm':'GPIO32 VCC monitoring requires a correctly installed 20k/10k divider from ACS712 VCC (not 12V bus) and DMM verification. Confirm physical installation before enabling.',
       g:'Safety check: ESP32 and station power were OFF before changing the GPIO35 wiring. The voltage sensor output is DISCONNECTED from GPIO35; GPIO35 is connected to GND; only then was the ESP32 powered from USB. Confirm before calibrating ground zero.',
       u:'Clear the previously saved GPIO35 raw-ground-zero calibration and restore its default threshold?',
       z:'Confirm there is NO current through the ACS712 IP+ / IP- conductor. The ESP32 may remain powered; the measured conductor must be unloaded.',

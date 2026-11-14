@@ -13,7 +13,7 @@ export function identifyProblems(h:Health|null|undefined,online:boolean):Advice[
  if(!h.lcd_initialized)problems.push({id:'lcd',title:'LCD failed to initialize',
   check:'Check regulated 5 V, LCD GND, I²C GPIO21/GPIO22, contrast and the bidirectional 3.3 V↔5 V shifter.',
   action:'Isolate power before reseating connections, then reboot and check Serial Monitor diagnostics.'});
- const version=h.firmware?.match(/^(\\d+)\\.(\\d+)\\./);
+ const version=h.firmware?.match(/^(\d+)\.(\d+)\./);
  const independent=!!version&&(Number(version[1])>5||(Number(version[1])===5&&Number(version[2])>=6));
  if(independent){
   if(h.current_status==='CHECK')problems.push({id:'current',title:'ACS712 current sensor — check signal',

@@ -23,6 +23,7 @@ const HELP = [
 
 export default function CalibrationConsole({adminKey}:{adminKey:string}){
   const [verified,setVerified]=useState(false);
+  const [verifiedKey,setVerifiedKey]=useState('');
   const [verifying,setVerifying]=useState(false);
   const [supported,setSupported]=useState(false);
   const [connected,setConnected]=useState(false);
@@ -55,6 +56,7 @@ export default function CalibrationConsole({adminKey}:{adminKey:string}){
     try{
       const response=await fetch('/api/admin/devices',{headers:{'x-admin-key':adminKey},cache:'no-store'});
       if(!response.ok)throw Error(response.status===401?'Invalid administrator token':'Unable to verify administrator access');
+      setVerifiedKey(adminKey);
       setVerified(true);
       setMessage('Administrator access verified for this browser session.');
     }catch(error){setMessage(String(error))}
@@ -82,12 +84,14 @@ export default function CalibrationConsole({adminKey}:{adminKey:string}){
         activeRef.current=false;
         setConnected(false);
         setMessage('ESP32 serial stream ended. Disconnect and reconnect the USB cable if needed.');
+        try{await port.close()}catch{}
+        if(portRef.current===port)portRef.current=null;
       }
     }
   }
 
   async function connect(){
-    if(!verified||connected||busy)return;
+    if(!verified||verifiedKey!==adminKey||connected||busy)return;
     const api=(navigator as NavigatorWithSerial).serial;
     if(!window.isSecureContext||!api){setMessage('Direct USB is supported in desktop Chrome/Edge over HTTPS. Use Arduino Serial Monitor on other browsers.');return}
     setBusy(true);setMessage('');
@@ -121,7 +125,7 @@ export default function CalibrationConsole({adminKey}:{adminKey:string}){
   }
 
   async function send(command:string){
-    if(!verified||!connected||busy||!portRef.current?.writable)return;
+    if(!verified||verifiedKey!==adminKey||!connected||busy||!portRef.current?.writable)return;
     const verb=command.split(' ')[0];
     const prompts:Record<string,string>={
       g:'Safety check: ESP32 and station power were OFF before changing the GPIO35 wiring. The voltage sensor output is DISCONNECTED from GPIO35; GPIO35 is connected to GND; only then was the ESP32 powered from USB. Confirm before calibrating ground zero.',
@@ -157,7 +161,8 @@ export default function CalibrationConsole({adminKey}:{adminKey:string}){
     try{await navigator.clipboard.writeText(command);setMessage('Copied '+command+' to clipboard. Paste into Serial Monitor set to 115200 baud and Newline.')}
     catch{setMessage('Clipboard unavailable. Select the command text and copy it manually.')}
   }
-  const canSend=verified&&connected&&!busy;
+  const accessOk=verified&&verifiedKey===adminKey;
+  const canSend=accessOk&&connected&&!busy;
 
   return <section className="panel calibration-panel" aria-label="Local ESP32 sensor calibration">
     <div className="panelheading">
@@ -176,8 +181,8 @@ export default function CalibrationConsole({adminKey}:{adminKey:string}){
         <h3><ShieldCheck size={17}/> Local USB access</h3>
         <p className="fineprint">Verify the administrator setup token above. Connecting additionally requires a user-approved local USB device selection; no firmware secrets are transmitted to this web page.</p>
         <div className="calibration-buttons">
-          <button type="button" className="ghostbutton" disabled={!adminKey||verifying||connected} onClick={verifyAdmin}><ShieldCheck size={15}/>{verified?'Access verified':verifying?'Verifying…':'Verify administrator'}</button>
-          {!connected?<button type="button" className="primarybutton" disabled={!verified||busy||!supported} onClick={connect}><PlugZap size={15}/> Connect ESP32</button>:
+          <button type="button" className="ghostbutton" disabled={!adminKey||verifying||connected} onClick={verifyAdmin}><ShieldCheck size={15}/>{accessOk?'Access verified':verifying?'Verifying…':'Verify administrator'}</button>
+          {!connected?<button type="button" className="primarybutton" disabled={!accessOk||busy||!supported} onClick={connect}><PlugZap size={15}/> Connect ESP32</button>:
             <button type="button" className="ghostbutton" disabled={busy} onClick={disconnect}><Unplug size={15}/> Disconnect</button>}
         </div>
         {!supported&&<p className="fineprint">Web Serial requires desktop Chrome or Edge with HTTPS and a USB-connected ESP32. Firefox, Safari, and most mobile browsers can use the copy-and-paste instructions instead.</p>}

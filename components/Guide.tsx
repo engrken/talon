@@ -1,7 +1,7 @@
 'use client';
 
 import {useMemo,useState} from 'react';
-import {Activity,AlertTriangle,ArrowLeft,BookOpen,CheckCircle2,Clipboard,ExternalLink,HelpCircle,LockKeyhole,PlugZap,Search,ShieldCheck,Terminal,Wifi,WifiOff,Wrench,Zap} from 'lucide-react';
+import {Activity,AlertTriangle,ArrowLeft,BookOpen,CheckCircle2,Clipboard,HelpCircle,LockKeyhole,Search,ShieldCheck,Terminal,Wifi,Wrench,Zap} from 'lucide-react';
 
 type Issue = {id:string;category:string;title:string;signs:string;checks:string[];fix:string[];stop?:string};
 const issues:Issue[]=[
@@ -56,9 +56,17 @@ export default function Guide(){
  const shown=useMemo(()=>issues.filter(issue=>(category==='All'||issue.category===category)&&[issue.title,issue.signs,...issue.checks,...issue.fix,issue.category].join(' ').toLowerCase().includes(query.trim().toLowerCase())),[category,query]);
  const [copied,setCopied]=useState('');
  async function copy(cmd:string){try{await navigator.clipboard.writeText(cmd);setCopied('Copied '+cmd+' • use 115200 baud + Newline.')}catch{setCopied('Copy failed: select and copy the command manually.');}}
+ function printGuide(){
+  const details=Array.from(document.querySelectorAll<HTMLDetailsElement>('.guide-page details'));
+  const initiallyOpen=details.map(d=>d.open);
+  details.forEach(d=>{d.open=true});
+  const restore=()=>{details.forEach((d,i)=>{d.open=initiallyOpen[i]});window.removeEventListener('afterprint',restore)};
+  window.addEventListener('afterprint',restore,{once:true});
+  window.print();
+ }
  return <main className="guide-page">
   <header className="guide-topbar"><a href="/" className="guide-back"><ArrowLeft size={16}/> Back to dashboard</a><a href="/admin" className="guide-admin"><LockKeyhole size={15}/> Station administration</a></header>
-  <section className="guide-hero"><div className="eyebrow">BARANGAY TALON • SOLAR CHARGING STATION</div><h1><BookOpen size={33}/> Operations, Calibration &amp; Troubleshooting</h1><p>A practical reference for community users and authorized technicians. Includes daily operation, setup, sensor wiring checks, serial commands, diagnostics, and recovery procedures.</p><div className="guide-hero-links"><a href="#quickstart">Start here</a><a href="#diagnostics">Find a problem</a><a href="#serial">Serial commands</a><button type="button" onClick={()=>window.print()}>Print guide</button></div></section>
+  <section className="guide-hero"><div className="eyebrow">BARANGAY TALON • SOLAR CHARGING STATION</div><h1><BookOpen size={33}/> Operations, Calibration &amp; Troubleshooting</h1><p>A practical reference for community users and authorized technicians. Includes daily operation, setup, sensor wiring checks, serial commands, diagnostics, and recovery procedures.</p><div className="guide-hero-links"><a href="#quickstart">Start here</a><a href="#diagnostics">Find a problem</a><a href="#serial">Serial commands</a><button type="button" onClick={printGuide}>Print full guide</button></div></section>
 
   <nav className="guide-toc" aria-label="Guide sections"><a href="#quickstart">Quick start</a><a href="#system">System</a><a href="#installation">Installation</a><a href="#dashboard">Web dashboard</a><a href="#serial">Calibration</a><a href="#diagnostics">Troubleshooting</a><a href="#maintenance">Maintenance</a><a href="#faq">FAQ</a></nav>
 

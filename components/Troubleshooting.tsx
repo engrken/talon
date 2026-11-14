@@ -2,18 +2,20 @@
 import {AlertTriangle,CheckCircle2,Lightbulb} from 'lucide-react';
 type Health={seen_at:string;firmware?:string;lcd_initialized:boolean;sensor_verified:boolean;sensor_fault:string;station_status:string;wifi_rssi_dbm:number;cloud_last_result:string;current_status?:string;voltage_status?:string;supply_mode?:string;low_current_estimate?:boolean};
 type Advice={id:string;title:string;check:string;action:string};
+const guideIssue:Record<string,string>={offline:'offline','no-health':'serial',lcd:'lcd',current:'negative',voltage:'voltage-wrong','no-input':'voltage-noinput','unknown-voltage':'mode',legacy:'serial',lowbus:'mode','weak-wifi':'wifi',cloud:'cloud'};
 export function identifyProblems(h:Health|null|undefined,online:boolean):Advice[]{
  if(!online)return [{id:'offline',title:'ESP32 not reporting to the cloud',
   check:'Confirm the ESP32 has stable power and that its local Wi-Fi access point is visible. Read the local LCD status.',
   action:'Connect to Talon Charging Station, open http://192.168.4.1/setup and verify the internet Wi-Fi, HTTPS ingest URL, device token and clock synchronization. If the AP is missing, inspect the ESP32 supply.'}];
  if(!h)return [{id:'no-health',title:'Current health report unavailable',
    check:'The ESP32 upload is recent, but no independent sensor status has arrived.',
-   action:'Upload the latest v5.6.0 firmware without erasing saved settings; verify the local LCD and HTTPS cloud configuration.'}];
+   action:'Upload the latest v5.6+ firmware without erasing saved settings; verify the local LCD and HTTPS cloud configuration.'}];
  const problems:Advice[]=[];
  if(!h.lcd_initialized)problems.push({id:'lcd',title:'LCD failed to initialize',
   check:'Check regulated 5 V, LCD GND, I²C GPIO21/GPIO22, contrast and the bidirectional 3.3 V↔5 V shifter.',
   action:'Isolate power before reseating connections, then reboot and check Serial Monitor diagnostics.'});
- const independent=!!h.firmware?.startsWith('5.6.');
+ const version=h.firmware?.match(/^(\d+)\.(\d+)\./);
+ const independent=!!version&&(Number(version[1])>5||(Number(version[1])===5&&Number(version[2])>=6));
  if(independent){
   if(h.current_status==='CHECK')problems.push({id:'current',title:'ACS712 current sensor — check signal',
    check:'Inspect the series IP+→IP− direction, a stable 5 V sensor supply, the shared ground, GPIO34 and 20 kΩ/10 kΩ divider. The saved zero calibration may have drifted.',
@@ -45,10 +47,10 @@ export default function Troubleshooting({health,online,lastSeen}:{health:Health|
  const problems=identifyProblems(health,online);
  return <section className="troubleshooting" aria-label="Automatic troubleshooting guidance">
   <div className="troubleshoot-head"><Lightbulb size={19}/><div><h3>Automatic troubleshooting guide</h3><p>Independent signal checks identify the affected channel, but cannot prove a sensor is physically broken.</p></div></div>
-  {problems.length?<div className="troubleshoot-items">{problems.map(p=><article key={p.id} className="troubleshoot-item"><div className="troubleshoot-item-title"><AlertTriangle size={17}/><strong>{p.title}</strong></div><p><b>What to check:</b> {p.check}</p><p><b>What to do:</b> {p.action}</p></article>)}</div>:
+  {problems.length?<div className="troubleshoot-items">{problems.map(p=><article key={p.id} className="troubleshoot-item"><div className="troubleshoot-item-title"><AlertTriangle size={17}/><strong>{p.title}</strong></div><p><b>What to check:</b> {p.check}</p><p><b>What to do:</b> {p.action}</p><a className="troubleshoot-guide-link" href={'/guide#issue-'+(guideIssue[p.id]||'offline')}>Detailed instructions →</a></article>)}</div>:
    <div className="troubleshoot-clear"><CheckCircle2 size={18}/> No confirmed diagnostics in the latest ESP32 report. Experimental 5 V operation is intentional and does not trigger a low-12 V alarm.</div>}
   {health?.supply_mode==='EXPERIMENTAL'&&<p className="fineprint">Experimental 5 V mode: currents below about 200 mA cannot be resolved reliably by the ACS712-30A. The mA display is approximate, rounded to 50 mA; use a shunt monitor for precision.</p>}
   {!online&&lastSeen&&<p className="fineprint">Last cloud contact: {new Date(lastSeen).toLocaleString('en-PH',{timeZone:'Asia/Manila'})}. Remote diagnosis cannot update until the ESP32 reconnects.</p>}
-  <p className="fineprint">Safety: Isolate DC power before changing wiring. Use suitable rated instruments for live measurements.</p>
+  <p className="fineprint">Safety: Isolate DC power before changing wiring. Use suitable rated instruments for live measurements.</p>\n  <p><a className="troubleshoot-guide-link" href="/guide#diagnostics">Open complete troubleshooting and calibration guide →</a></p>
  </section>;
 }

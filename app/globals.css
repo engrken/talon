@@ -59,3 +59,116 @@
 .reset-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .dangerbutton{background:#ac2d28;color:#fff;border:0;border-radius:9px;font-weight:700;padding:12px 14px;margin-top:10px}
 .dangerbutton:disabled{opacity:.45;cursor:not-allowed}
+
+
+/* Administrator-only local ESP32 serial diagnostics and calibration */
+.calibration-panel{margin-top:18px}
+.calibration-panel h2,.calibration-panel h3{display:flex;align-items:center;gap:9px}
+.calibration-panel h3{font-size:15px;margin:10px 0 12px}
+.calibration-baud{font-size:12px;font-weight:700;color:#267454;background:#edf7ef;padding:8px 11px;border-radius:9px}
+.calibration-intro{font-size:13px;line-height:1.7;color:#536e5f;margin:15px 0}
+.calibration-safety{display:flex;align-items:flex-start;gap:11px;border:1px solid #edcfaa;border-radius:11px;background:#fff9ec;padding:15px;color:#835523}
+.calibration-safety svg{flex:none}
+.calibration-safety strong{font-size:13px}
+.calibration-safety p{font-size:12px;line-height:1.7;margin:7px 0 0}
+.calibration-safety code,.calibration-command code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf4ee;color:#245a45;border-radius:5px;padding:3px 7px}
+.calibration-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px;margin-top:21px}
+.calibration-buttons{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.calibration-buttons button{display:flex;align-items:center;gap:7px;margin:3px 5px 9px 0}
+.calibration-terminal-header{display:flex;align-items:center;justify-content:space-between;margin:15px 0 7px;gap:10px;font-size:12px;font-weight:700}
+.calibration-terminal-header span{display:flex;gap:7px;align-items:center}
+.calibration-terminal-header .ghostbutton{padding:7px 10px;margin:0}
+.calibration-terminal{white-space:pre-wrap;word-break:break-word;background:#112822;color:#d8f6e8;border-radius:10px;min-height:170px;max-height:335px;overflow:auto;padding:15px;font-size:12px;line-height:1.55;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.calibration-command-list{border:1px solid var(--line);border-radius:11px;overflow:hidden}
+.calibration-command{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:13px;border-bottom:1px solid var(--line);font-size:12px}
+.calibration-command:last-child{border-bottom:0}
+.calibration-command>div:first-child{min-width:0}
+.calibration-command strong{display:inline-block;margin-left:4px;font-size:12px;color:#204b39}
+.calibration-command p{margin:8px 0 0;line-height:1.55;color:#647a6e}
+.calibration-command-actions{display:flex;gap:5px;flex-shrink:0}
+.calibration-command-actions button{display:flex;align-items:center;justify-content:center;min-width:34px;border:1px solid #cfdfd3;background:#eff7f1;color:#1a7555;border-radius:7px;padding:7px 9px;font-size:11px;font-weight:700}
+.calibration-command-actions button:disabled{opacity:.4;cursor:not-allowed}
+.calibration-reference{display:block;font-size:11px;color:#39654f;margin-top:12px;font-weight:700}
+.calibration-reference input{display:block;width:130px;max-width:100%;padding:8px;margin-top:5px;border:1px solid #cbdcd0;border-radius:7px;background:#fbfdfb;color:var(--ink)}
+@media(max-width:850px){.calibration-grid{grid-template-columns:1fr}}
+@media(max-width:550px){.calibration-command{flex-wrap:wrap}.calibration-command-actions{width:100%;justify-content:flex-end}.calibration-baud{align-self:flex-start}}
+
+
+/* Community and authorized-technician knowledge base */
+.guide-page{max-width:1180px;margin:0 auto;padding:0 24px;color:var(--ink)}
+.guide-topbar{min-height:75px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.guide-topbar a{display:inline-flex;gap:8px;align-items:center;text-decoration:none;color:#276a50;font-weight:700;font-size:12px}
+.guide-admin{border:1px solid #d6e6da;border-radius:9px;padding:9px 12px;background:#fff}
+.guide-hero{padding:40px 38px;background:linear-gradient(125deg,#0f4937,#1d795d);border-radius:19px;color:#fff}
+.guide-hero .eyebrow{color:#bcecd0}
+.guide-hero h1{display:flex;align-items:center;gap:13px;font-size:clamp(26px,3.5vw,39px);margin:12px 0;line-height:1.17;letter-spacing:-.032em}
+.guide-hero h1 svg{flex:none}
+.guide-hero p{max-width:830px;font-size:14px;line-height:1.65;color:#e5f8ee}
+.guide-hero-links{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-top:24px}
+.guide-hero-links a,.guide-hero-links button{display:inline-flex;align-items:center;border-radius:8px;padding:10px 13px;font-size:12px;font-weight:700;text-decoration:none;background:#fff;color:#17694b;border:1px solid #fff}
+.guide-hero-links button{background:transparent;color:#fff;cursor:pointer}
+.guide-toc{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 20px;position:sticky;top:0;z-index:3;background:var(--bg);padding:10px 0;border-bottom:1px solid var(--line)}
+.guide-toc a{padding:8px 12px;border:1px solid #d6e5da;border-radius:20px;background:#fff;color:#347159;text-decoration:none;font-size:12px;font-weight:700}
+.guide-section{margin-top:16px;scroll-margin-top:95px}
+.guide-section-title{margin-bottom:18px}
+.guide-section-title h2{display:flex;gap:10px;align-items:center;font-size:22px;margin:8px 0}
+.guide-section-title p{font-size:13px;line-height:1.6;color:#6a8075}
+.guide-section p,.guide-section li{line-height:1.7}
+.guide-section>p{font-size:13px;color:#536b5d}
+.guide-section h3{font-size:15px;color:#245c43}
+.guide-section ul,.guide-section ol{padding-left:22px}
+.guide-callout{display:flex;align-items:flex-start;gap:12px;background:#eef7f0;color:#2e6d4f;border:1px solid #d5e9db;padding:15px;border-radius:11px;margin:15px 0}
+.guide-callout.danger{background:#fff7ec;border-color:#ecd2a8;color:#884c1d}
+.guide-callout svg{flex:none}
+.guide-callout strong{font-size:13px}
+.guide-callout p{color:#546a5b;font-size:12px;margin:6px 0 0}
+.guide-two,.guide-three{display:grid;gap:14px;margin:17px 0}
+.guide-two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.guide-three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.guide-three article,.guide-two>div{border:1px solid var(--line);border-radius:12px;background:#fafdfa;padding:16px;min-width:0}
+.guide-three strong{font-size:14px;color:#205840}
+.guide-three p,.guide-three li,.guide-two p,.guide-two li{font-size:12px;color:#556e60}
+.guide-three ol,.guide-three ul,.guide-two ol,.guide-two ul{padding-left:19px;margin-bottom:0}
+.guide-architecture{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:12px 0 17px}
+.guide-architecture>div{background:#e6f3eb;color:#246748;border:1px solid #cfe4d6;border-radius:8px;padding:12px;font-weight:700;font-size:12px;flex:1;min-width:133px;text-align:center}
+.guide-architecture>span{font-size:18px;color:#5a9677}
+.guide-steps{counter-reset:instruction;display:grid;gap:11px}
+.guide-steps>li{padding:12px 13px 12px 14px;border-left:3px solid #279a73;background:#f9fcfa;font-size:13px;border-radius:5px}
+.guide-section code{padding:2px 5px;background:#ecf5ef;border-radius:4px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:.92em}
+.guide-mode-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0}
+.guide-mode-grid>div{border:1px solid var(--line);border-radius:11px;padding:14px;min-width:0;background:#fafdfa}
+.guide-mode-grid strong{display:block;font-size:13px;color:#235d45}
+.guide-mode-grid span{display:inline-block;font-weight:700;color:#118665;margin:7px 0}
+.guide-mode-grid p{margin:5px 0 0;font-size:12px;color:#65796c}
+.guide-command-table{max-width:100%;overflow-x:auto;margin:19px 0;border:1px solid var(--line);border-radius:11px}
+.guide-command-table table{min-width:690px}
+.guide-command-table th,.guide-command-table td{white-space:normal;vertical-align:top;font-size:12px;line-height:1.6}
+.guide-command-table td p{font-size:11px;color:#72897b;margin:6px 0 0}
+.guide-command-table td button{background:#eef6ef;border:1px solid #d2e5d8;color:#187755;padding:8px;border-radius:7px;cursor:pointer}
+.guide-search{display:flex;align-items:center;gap:9px;padding:10px 14px;border:1px solid #cfe0d5;background:#fbfdfb;border-radius:11px;margin:15px 0}
+.guide-search svg{color:#4e896d;flex:none}
+.guide-search input{width:100%;outline:none;border:0;background:transparent;color:var(--ink);min-height:30px;font-size:13px}
+.guide-filters{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.guide-filters button{padding:7px 11px;border-radius:20px;border:1px solid #d7e8da;color:#387257;background:#f3faf5;cursor:pointer;font-size:12px}
+.guide-filters button.active{background:#177b5a;color:#fff;border-color:#177b5a}
+.guide-issues{display:grid;gap:9px;margin:15px 0}
+.guide-issues details{border:1px solid #dae7dd;background:#fcfefd;border-radius:10px;overflow:hidden}
+.guide-issues summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:14px 16px;gap:10px}
+.guide-issues summary::-webkit-details-marker{display:none}
+.guide-issues summary strong{display:block;font-size:13px;color:#235b44}
+.guide-issues summary small{display:block;font-size:10px;color:#648d76;margin-bottom:5px;text-transform:uppercase;font-weight:700;letter-spacing:.05em}
+.guide-issues summary em{display:block;font-size:12px;color:#728779;margin-top:5px;font-style:normal}
+.guide-plus{font-size:21px;color:#3e8262;font-weight:500}
+.guide-issues details[open] .guide-plus{transform:rotate(45deg)}
+.guide-issues details[open] summary{border-bottom:1px solid var(--line);background:#f2f9f4}
+.guide-issue-body{display:grid;grid-template-columns:1fr 1fr;gap:18px;padding:17px}
+.guide-issue-body strong{font-size:12px;color:#2b6e4e}
+.guide-issue-body ol{padding-left:18px;margin-bottom:0}
+.guide-issue-body li,.guide-faq-answer{font-size:12px;color:#526b5c;line-height:1.7}
+.guide-faq-answer{padding:15px 17px}
+.guide-footer{margin-bottom:32px}
+.admin-guide-link{margin-left:12px;color:#257658}
+.troubleshoot-guide-link{display:inline-flex;font-size:12px;font-weight:700;color:#147d59;text-decoration:none;border:1px solid #d2e8da;padding:10px 12px;border-radius:8px}
+@media(max-width:920px){.guide-mode-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.guide-three{grid-template-columns:1fr}.guide-architecture>div{min-width:170px}}
+@media(max-width:660px){.guide-page{padding:0 13px}.guide-hero{padding:24px 19px}.guide-hero h1 svg{width:24px}.guide-hero p{font-size:13px}.guide-toc{position:static}.guide-section{padding:16px}.guide-section-title h2{font-size:19px}.guide-two,.guide-mode-grid,.guide-issue-body{grid-template-columns:1fr}.guide-architecture>span{display:none}.guide-architecture>div{flex:1 1 100%}.guide-topbar a{font-size:11px}.guide-topbar{flex-wrap:wrap;padding:11px 0}.admin-guide-link{margin-left:0;margin-top:10px;display:flex;width:max-content}.navright{gap:8px;flex-wrap:wrap}.navlink{font-size:11px}}
+@media print{.guide-page{max-width:none;padding:0}.guide-toc,.guide-topbar,.guide-hero-links,.guide-command-table button,.guide-search,.guide-filters,.guide-plus{display:none!important}.guide-hero{background:#fff;color:#17322d;border:1px solid #ddd;padding:15px}.guide-hero .eyebrow,.guide-hero p{color:#17322d}.guide-section{break-inside:avoid;box-shadow:none;border:1px solid #ddd}.guide-issues details{break-inside:avoid}.guide-footer{display:none}}

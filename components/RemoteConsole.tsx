@@ -1,6 +1,6 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
-import {Activity,Cloud,RefreshCw,ShieldCheck,Terminal} from 'lucide-react';
+import {Activity,ChevronDown,Cloud,RefreshCw,ShieldCheck,Terminal} from 'lucide-react';
 import {calibrationOutcome} from '@/lib/calibration-outcome.mjs';
 type Entry={id:string;command:'h'|'d'|'zc'|'za'|'zr';state:string;requested_at:string;completed_at:string|null;output:string|null};
 type Health={remoteReady:boolean;remoteZeroReady:boolean;remoteDiagnostics:boolean;firmware:string|null;lastSeen:string|null};
@@ -36,6 +36,7 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
  const [entries,setEntries]=useState<Entry[]>([]);
  const [deviceHealth,setDeviceHealth]=useState<Health|null>(null);
  const [busy,setBusy]=useState(false);
+ const [mobileActionsOpen,setMobileActionsOpen]=useState(false);
  const [error,setError]=useState('');
  const [noCurrentConfirmed,setNoCurrentConfirmed]=useState(false);
  const [confirmation,setConfirmation]=useState('');
@@ -74,7 +75,7 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
     headers:{'x-admin-key':adminKey,'Content-Type':'application/json'},
     body:JSON.stringify({deviceId,command,noCurrentConfirmed,confirmation}),cache:'no-store'});
    const j=await r.json();if(!r.ok)throw Error(j.error||'Command rejected');
-   setNoCurrentConfirmed(false);setConfirmation('');
+   setNoCurrentConfirmed(false);setConfirmation('');setMobileActionsOpen(false);
    await load(adminKey,deviceId);
   }catch(e){setError(String(e))}finally{setBusy(false)}
  }
@@ -96,18 +97,32 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
  const zeroActionIsSaved=outcome.kind==='saved';
  const zeroRollbackComplete=outcome.kind==='rolled_back';
  const latestZeroSuccessfulCheck=outcome.kind==='precheck_ready';
- return <section className="panel remote-console" aria-label="Remote Talon ESP32 diagnostics">
-  <div className="panelheading"><div><span className="eyebrow">SECURE INTERNET DIAGNOSTICS</span><h2><Cloud size={19}/> Remote ESP32 command console</h2></div>
-   <span className="calibration-baud">Firmware v5.6 · HTTPS</span></div>
-  <p className="fineprint">Clear completed diagnostic or calibration test logs in <a href="/admin#log-maintenance">Storage &amp; Log Management</a>. Pending commands and stored ESP32 calibration are not removed.</p>
-  <p className="fineprint">ESP32 initiates authenticated HTTPS requests over Wi-Fi. The <code>h</code> and <code>d</code> commands remain read-only; no laptop USB connection, extra pins, or open inbound ports are required.</p>
-  {verified&&deviceId&&deviceHealth&&<p className="fineprint" role="status"><strong>Device firmware:</strong> {deviceHealth.firmware||'Not reported'} · <strong>Remote diagnostics:</strong> {deviceHealth.remoteReady?'Online and ready':deviceHealth.remoteDiagnostics?'Supported, device offline':'Requires v5.6 remote patch'}{deviceHealth.lastSeen?' · Last contact '+new Date(deviceHealth.lastSeen).toLocaleString('en-PH',{timeZone:'Asia/Manila'}):''}</p>}
-  <div className="remote-controls">
+ return <section id="remote-console" className="panel remote-console" aria-label="Remote Talon ESP32 diagnostics">
+  <div className="remote-console-sticky">
+   <div className="remote-console-titleline">
+    <div className="remote-console-title"><span className="eyebrow">SECURE INTERNET DIAGNOSTICS</span><h2><Cloud size={19}/> Remote ESP32 command console</h2></div>
+    <div className="remote-console-status">
+     <span className={'remote-online-pill '+(deviceHealth?.remoteReady&&verified?'is-online':'is-offline')} role="status">
+       <span className="remote-online-dot" aria-hidden="true"/>
+       {!verified?'Admin verification needed':deviceHealth?.remoteReady?'ESP32 online':'ESP32 offline / checking'}
+     </span>
+     <span className="remote-console-version">HTTPS {deviceHealth?.firmware?'· '+deviceHealth.firmware:''}</span>
+    </div>
+    <button type="button" className="remote-mobile-toggle" aria-expanded={mobileActionsOpen} aria-controls="remote-action-controls" onClick={()=>setMobileActionsOpen(v=>!v)}>
+     Actions <ChevronDown size={16} className={mobileActionsOpen?'remote-chevron-open':''}/>
+    </button>
+   </div>
+   <div id="remote-action-controls" className={'remote-controls'+(mobileActionsOpen?' remote-controls-open':'')}>
    <button className="ghostbutton" type="button" disabled={!adminKey||busy} onClick={verify}><ShieldCheck size={15}/>{verified?'Admin verified':'Verify administrator access'}</button>
    {verified&&<select aria-label="ESP32 device" value={deviceId} onChange={e=>{setDeviceId(e.target.value);setEntries([]);setDeviceHealth(null);setConfirmation('');setNoCurrentConfirmed(false)}}>{devices.map(d=><option key={d.id} value={d.id}>{d.label} ({d.id})</option>)}</select>}
    <button className="primarybutton" disabled={!canSend} onClick={()=>void send('h')}><Terminal size={15}/> Help (h)</button>
    <button className="primarybutton" disabled={!canSend} onClick={()=>void send('d')}><Activity size={15}/> Read ADC (d)</button>
    <button className="ghostbutton" type="button" disabled={!verified||busy} onClick={()=>void load(adminKey,deviceId)}><RefreshCw size={15}/> Refresh</button>
+  </div>
+  </div>
+  <div className="remote-console-intro">
+   <p className="fineprint">ESP32 initiates authenticated HTTPS requests over Wi-Fi; no laptop USB connection, additional pins or inbound ports are required. Only <code>h</code> and <code>d</code> are read-only; zero-calibration commands require explicit physical verification.</p>
+   <p className="fineprint">{verified&&deviceId&&deviceHealth?<>Firmware <strong>{deviceHealth.firmware||'not reported'}</strong> · Last cloud contact {deviceHealth.lastSeen?new Date(deviceHealth.lastSeen).toLocaleString('en-PH',{timeZone:'Asia/Manila'}):'not available'} · </>:null}Clear old test responses via <a href="/admin#log-maintenance">Log Management</a>; pending commands and stored ESP32 calibration are preserved.</p>
   </div>
   {verified&&<section className="remote-zero-panel" aria-label="Controlled remote ACS712 zero calibration">
     <div className="remote-zero-heading">

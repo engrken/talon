@@ -457,3 +457,107 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .log-management-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .log-management-actions>button{margin:0}
 @media(max-width:720px){.log-management-grid{grid-template-columns:1fr}.log-management-toolbar{align-items:stretch}.log-management-toolbar label{width:100%}.log-management-toolbar button{justify-content:center}.log-management-actions button{width:100%}}
+
+/* Compact sticky administration navigation and remote command controls */
+.admin-sticky-nav{
+ position:sticky;top:0;z-index:45;display:flex;align-items:center;justify-content:space-between;
+ gap:16px;padding:10px 14px;margin:18px 0 24px;border:1px solid #d4e7da;
+ border-radius:13px;background:rgba(250,253,250,.96);backdrop-filter:blur(14px);
+ -webkit-backdrop-filter:blur(14px);box-shadow:0 7px 24px rgba(18,66,41,.09);min-width:0;
+}
+.admin-sticky-identity{display:flex;flex-direction:column;gap:1px;min-width:132px}
+.admin-sticky-identity span{font-size:9px;letter-spacing:.12em;color:#709587;font-weight:800}
+.admin-sticky-identity strong{font-size:12px;color:#194f3c;white-space:nowrap}
+.admin-sticky-links{display:flex;gap:5px;align-items:center;min-width:0;overflow-x:auto;scrollbar-width:thin}
+.admin-sticky-links a{display:inline-flex;align-items:center;justify-content:center;padding:9px 12px;
+ border-radius:8px;text-decoration:none;color:#276b50;font-size:12px;font-weight:700;
+ white-space:nowrap;min-height:38px}
+.admin-sticky-links a:hover,.admin-sticky-links a:focus-visible{background:#e8f5ed;color:#0c664a}
+#admin-setup,#log-maintenance,#remote-console,#local-calibration{scroll-margin-top:82px}
+.remote-console{position:relative;min-width:0}
+.remote-console-sticky{position:sticky;top:70px;z-index:30;padding:12px 14px 10px;margin:-12px -14px 14px;
+ background:rgba(252,254,252,.98);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+ border:1px solid #dceae0;border-radius:12px;box-shadow:0 7px 25px rgba(20,67,42,.10)}
+.remote-console-titleline{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.remote-console-title{min-width:0;flex:1}
+.remote-console-title .eyebrow{font-size:10px}
+.remote-console-title h2{font-size:17px;line-height:1.35;margin:4px 0}
+.remote-console-status{display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:flex-end}
+.remote-online-pill{display:inline-flex;align-items:center;gap:7px;padding:6px 9px;border-radius:99px;
+ font-size:11px;font-weight:700;white-space:nowrap;max-width:100%}
+.remote-online-pill.is-online{background:#e2f4e9;color:#136e48}
+.remote-online-pill.is-offline{background:#f3f0e9;color:#7c683d}
+.remote-online-dot{display:inline-block;width:7px;height:7px;border-radius:50%;flex:none;background:currentColor}
+.remote-console-version{color:#6a8575;font-size:11px;font-weight:700;white-space:nowrap}
+.remote-console-sticky .remote-controls{display:grid;grid-template-columns:auto minmax(155px,1fr) auto auto auto;
+ gap:9px;align-items:center;margin:10px 0 0}
+.remote-console-sticky .remote-controls>button,.remote-console-sticky .remote-controls>select{margin:0;min-height:42px;
+ min-width:0;font-size:12px;border-radius:9px}
+.remote-console-sticky .remote-controls button{display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.remote-console-sticky .remote-controls select{width:100%;background:#fff;color:#235840;min-width:0}
+.remote-console-intro{display:grid;gap:5px;margin:0 0 16px}
+.remote-console-intro .fineprint{margin:0;font-size:11px;line-height:1.7;overflow-wrap:anywhere}
+.remote-mobile-toggle{display:none;border:1px solid #cfe4d4;border-radius:8px;background:#e7f4ea;
+ color:#165e41;align-items:center;gap:6px;padding:10px 12px;font-size:12px;font-weight:800;min-height:42px}
+.remote-mobile-toggle svg{transition:transform .2s ease}
+.remote-chevron-open{transform:rotate(180deg)}
+.remote-zero-panel .remote-zero-input{min-height:43px}
+.remote-console .remote-results article{min-width:0}
+.remote-console .remote-results pre{overflow-wrap:anywhere;word-break:break-word}
+@media(min-width:721px) and (max-width:1020px){
+ .remote-console-sticky .remote-controls{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .remote-console-sticky .remote-controls>select{grid-column:2 / -1}
+ .remote-console-sticky .remote-controls>button{min-width:0}
+}
+@media(max-width:720px){
+ .adminpage{padding:14px 12px 32px;max-width:100%;overflow-wrap:anywhere}
+ .adminhead{margin:24px auto 22px}
+ .adminhead h1{font-size:clamp(25px,7vw,34px);margin:10px 0}
+ .adminhead p{font-size:12px}
+ .admin-sticky-nav{top:0;min-height:53px;padding:6px 5px;margin:12px -4px 20px;border-radius:10px;gap:0}
+ .admin-sticky-identity{display:none}
+ .admin-sticky-links{flex:1;gap:3px;scrollbar-width:none}
+ .admin-sticky-links::-webkit-scrollbar{display:none}
+ .admin-sticky-links a{padding:8px 11px;font-size:11px;min-height:40px}
+ #admin-setup,#log-maintenance,#remote-console,#local-calibration{scroll-margin-top:66px}
+ .admincols>.panel{min-width:0}
+ .remote-console-sticky{top:58px;margin:-10px -10px 12px;padding:10px 11px;z-index:30;box-shadow:0 5px 17px rgba(20,67,42,.12)}
+ .remote-console-titleline{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px}
+ .remote-console-title{grid-column:1}
+ .remote-console-title h2{font-size:15px;line-height:1.25}
+ .remote-console-title .eyebrow{font-size:9px}
+ .remote-console-title h2 svg{width:17px;height:17px;flex:none}
+ .remote-mobile-toggle{display:inline-flex;grid-column:2;grid-row:1 / 3}
+ .remote-console-status{grid-column:1;justify-content:flex-start;gap:6px}
+ .remote-online-pill{font-size:10px;padding:4px 7px}
+ .remote-console-version{font-size:10px}
+ .remote-console-sticky .remote-controls{display:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0 0;
+  padding-top:10px;border-top:1px solid #dcebe1;max-height:55vh;overflow-y:auto;overscroll-behavior:contain}
+ .remote-console-sticky .remote-controls.remote-controls-open{display:grid}
+ .remote-console-sticky .remote-controls>button{width:100%;min-height:44px;padding:11px 8px;font-size:12px}
+ .remote-console-sticky .remote-controls>button:first-child{grid-column:1 / -1}
+ .remote-console-sticky .remote-controls>select{grid-column:1 / -1;min-height:46px;font-size:13px}
+ .remote-console-sticky .remote-controls>button:last-child{grid-column:1 / -1}
+ .remote-console .remote-zero-panel{padding:13px;margin:13px 0}
+ .remote-console .remote-zero-heading{gap:8px}
+ .remote-console .remote-zero-heading h3{font-size:15px}
+ .remote-console .remote-zero-capable,.remote-console .remote-zero-unavailable{font-size:10px}
+ .remote-console .remote-zero-summary{padding:12px}
+ .remote-console .remote-noise-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .remote-console .remote-noise-metrics>div{padding:8px;min-width:0}
+ .remote-console .remote-noise-metrics dd{font-size:12px;overflow-wrap:anywhere}
+ .remote-console .remote-zero-verification{padding:11px}
+ .remote-console .remote-zero-phrase code{overflow-wrap:anywhere}
+ .remote-console .remote-results{max-height:55vh}
+ .remote-console .remote-results article{padding:10px}
+ .remote-console .remote-results pre{font-size:11px;padding:11px;line-height:1.6}
+ .remote-console .remote-result-head{align-items:flex-start;gap:5px}
+ .remote-console .remote-zero-buttons button{min-height:44px}
+}
+@media(max-width:380px){
+ .remote-console-title h2{font-size:13px}
+ .remote-console .remote-noise-metrics{grid-template-columns:1fr}
+ .remote-console-sticky{padding:8px}
+ .remote-mobile-toggle{padding:9px 8px}
+}
+@media(prefers-reduced-motion:reduce){.remote-mobile-toggle svg{transition:none}}

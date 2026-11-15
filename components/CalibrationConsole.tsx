@@ -164,7 +164,7 @@ export default function CalibrationConsole({adminKey}:{adminKey:string}){
   const accessOk=verified&&verifiedKey===adminKey;
   const canSend=accessOk&&connected&&!busy;
 
-  return <section className="panel calibration-panel" aria-label="Local ESP32 sensor calibration">
+  return <section id="local-calibration" className="panel calibration-panel" aria-label="Local ESP32 sensor calibration">
     <div className="panelheading">
       <div><span className="eyebrow">LOCAL DEVICE MAINTENANCE</span><h2><Terminal size={21}/> Sensor diagnostics &amp; calibration</h2></div>
       <span className="calibration-baud">115200 baud · Newline (LF)</span>

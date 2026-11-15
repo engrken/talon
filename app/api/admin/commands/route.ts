@@ -8,7 +8,7 @@ export async function GET(request:Request){
  const deviceId=new URL(request.url).searchParams.get('deviceId')||'';
  if(!isDeviceId(deviceId))return Response.json({error:'Invalid device'},{status:400,headers:noCache});
  const sql=database();
- const device=await sql`SELECT d.last_seen,h.firmware,h.remote_diagnostics,h.remote_diagnostics
+ const device=await sql`SELECT d.last_seen,h.firmware,h.remote_diagnostics
    FROM solar_devices d LEFT JOIN solar_device_health h ON h.device_id=d.id
    WHERE d.id=${deviceId} LIMIT 1`;
  if(!device.length)return Response.json({error:'Device not found'},{status:404,headers:noCache});

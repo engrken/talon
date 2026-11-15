@@ -28,7 +28,7 @@ export async function POST(request:Request){
  if(!isDeviceId(deviceId)||!['h','d'].includes(command))
    return Response.json({error:'Only read-only h/d diagnostics are permitted remotely'},{status:400,headers:noCache});
  const sql=database();
- const device=await sql`SELECT d.last_seen,h.firmware
+ const device=await sql`SELECT d.last_seen,h.firmware,h.remote_diagnostics
    FROM solar_devices d LEFT JOIN solar_device_health h ON h.device_id=d.id
    WHERE d.id=${deviceId} LIMIT 1`;
  if(!device.length||!device[0].last_seen||Date.now()-new Date(device[0].last_seen).getTime()>240000)

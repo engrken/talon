@@ -5,12 +5,21 @@ import EnergyInsights from '@/components/EnergyInsights';
 import {useEffect,useMemo,useState} from 'react';
 import {AreaChart,Area,CartesianGrid,ResponsiveContainer,Tooltip,XAxis,YAxis,BarChart,Bar} from 'recharts';
 import {Sun,Wifi,WifiOff,BatteryCharging,Activity,Zap,CalendarDays,Download,ArrowUpRight,RefreshCw,Server,ShieldCheck,TrendingUp,Clock3,ChevronLeft,ChevronRight,Info,Radio,PlugZap} from 'lucide-react';
-type Reading={observed_at:string;volts:number;amps:number;watts:number;delta_wh:number;energy_wh:number;status:string;received_at?:string};
+type Reading={observed_at:string;volts:number;amps:number;watts:number;delta_wh:number;energy_wh:number;status:string;measurement_quality?:string;received_at?:string};
 type Day={day:string;energy_wh:number;peak_watts:number;samples:number;cost_php:number|null;rate:number|null};
 type Overview={device:null|{id:string;label:string;last_seen:string|null};latest:Reading|null;daily:Day[];rates:{billing_month:string;rate:number}[];health?:{seen_at?:string;sensor_verified:boolean;current_status?:string;voltage_status?:string;supply_mode?:string;low_current_estimate?:boolean}|null};
 function phDate(d=new Date()){return d.toLocaleDateString('sv-SE',{timeZone:'Asia/Manila'})}
 function clock(stamp:string){return new Date(stamp).toLocaleTimeString('en-PH',{timeZone:'Asia/Manila',hour:'2-digit',minute:'2-digit',hour12:false})}
 function peso(n:number){return new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(n)}
+function estimateLabel(q:string|undefined){
+ switch(q){
+  case 'ZERO_REFERENCED':return 'Zero-referenced estimate';
+  case 'UNVERIFIED_ESTIMATE':return 'Unverified estimate';
+  case 'BELOW_RESOLUTION':return 'Below sensor resolution';
+  case 'EXPERIMENTAL_ESTIMATE':return '5 V lab estimate';
+  default:return 'Legacy estimate';
+ }
+}
 function age(stamp:string|null|undefined,now:number){if(!stamp)return 'No uploads yet';const seconds=Math.max(0,Math.floor((now-new Date(stamp).getTime())/1000));if(!Number.isFinite(seconds))return 'Time unavailable';if(seconds<60)return 'Less than a minute ago';if(seconds<3600)return Math.floor(seconds/60)+' min ago';if(seconds<86400)return Math.floor(seconds/3600)+' hr ago';return Math.floor(seconds/86400)+' days ago'}
 
 export default function Dashboard(){
@@ -79,7 +88,7 @@ export default function Dashboard(){
   <EnergyInsights rows={rows} selectedDate={date} todayDate={todayDate} health={health}/>
   <div id="health"><StationHealth health={overview?.health as any} lastSeen={overview?.device?.last_seen}/></div>
   <Reports/>
-  <section className="panel logs" id="records"><div className="panelheading"><div><span className="eyebrow">MEASUREMENT AUDIT TRAIL</span><h2>Recent measurement logs</h2></div><span className="muted"><RefreshCw size={13}/> {rows.length} entries on {date}</span></div><div className="tablewrap"><table><thead><tr><th>Time (PHT)</th><th>Voltage</th><th>Current</th><th>Est. power</th><th>Est. energy delta</th><th>Supply status</th></tr></thead><tbody>{[...rows].reverse().slice(0,20).map((r,i)=><tr key={r.observed_at+i}><td>{clock(r.observed_at)}</td><td>{Number(r.volts).toFixed(2)} V</td><td>{Number(r.amps).toFixed(3)} A</td><td>{Number(r.watts).toFixed(2)} W</td><td>{Number(r.delta_wh).toFixed(3)} Wh</td><td><span className={'pill '+(['OK','EXPERIMENTAL'].includes(r.status)?'good':'warning')}>{r.status.replaceAll('_',' ')}</span></td></tr>)}{!rows.length&&<tr><td className="tableempty" colSpan={6}>No recorded measurements on the selected date.</td></tr>}</tbody></table></div><p className="fineprint">Showing up to 20 most recent rows for the selected date. Use CSV export in the performance chart for the full available day (up to 1,500 readings).</p></section>
+  <section className="panel logs" id="records"><div className="panelheading"><div><span className="eyebrow">MEASUREMENT AUDIT TRAIL</span><h2>Recent measurement logs</h2></div><span className="muted"><RefreshCw size={13}/> {rows.length} entries on {date}</span></div><div className="tablewrap"><table><thead><tr><th>Time (PHT)</th><th>Voltage</th><th>Current</th><th>Est. power</th><th>Est. energy delta</th><th>Estimate quality</th><th>Supply status</th></tr></thead><tbody>{[...rows].reverse().slice(0,20).map((r,i)=><tr key={r.observed_at+i}><td>{clock(r.observed_at)}</td><td>{Number(r.volts).toFixed(2)} V</td><td>{Number(r.amps).toFixed(3)} A</td><td>{Number(r.watts).toFixed(2)} W</td><td>{Number(r.delta_wh).toFixed(3)} Wh</td><td>{estimateLabel(r.measurement_quality)}</td><td><span className={'pill '+(['OK','EXPERIMENTAL'].includes(r.status)?'good':'warning')}>{r.status.replaceAll('_',' ')}</span></td></tr>)}{!rows.length&&<tr><td className="tableempty" colSpan={7}>No recorded measurements on the selected date.</td></tr>}</tbody></table></div><p className="fineprint">Showing up to 20 recent rows. Quality labels indicate zero-baseline and sensor-resolution status, not independently certified accuracy. A zero-watt snapshot may have a positive interval Wh delta because that delta accumulated before the snapshot. Old firmware samples remain legacy estimates.</p></section>
   <footer><div><Server size={16}/> Barangay Talon Solar Charging Station • ESP32 monitoring</div><p>Voltage, current, power and energy describe approximate measurements of the monitored DC supply to the USB converters, including intentional 5 V experimental testing. The ACS712-30A cannot reliably measure very small currents, so light-load energy may be undercounted. These values are not PV generation, battery state of charge, individual USB-port consumption, billing-grade energy, or verified electricity-bill savings. A separate physical DC meter remains an independent offline reference.</p></footer>
  </main>
 }

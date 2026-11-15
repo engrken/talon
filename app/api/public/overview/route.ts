@@ -4,7 +4,7 @@ export const runtime='nodejs';export const dynamic='force-dynamic';
 export async function GET(){
  const device=await firstDevice();if(!device)return noStore({device:null,latest:null,daily:[],rates:[],health:null});
  const sql=database();
- const latest=await sql`SELECT received_at AS observed_at,volts,amps,watts,energy_wh,delta_wh,status
+ const latest=await sql`SELECT received_at AS observed_at,volts,amps,watts,energy_wh,delta_wh,status,measurement_quality
   FROM solar_readings WHERE device_id=${device.id} ORDER BY id DESC LIMIT 1`;
  const daily=await sql`SELECT (r.received_at AT TIME ZONE 'Asia/Manila')::date::text AS day,
   COALESCE(SUM(r.delta_wh),0)::float8 AS energy_wh, MAX(r.watts) AS peak_watts,COUNT(*)::int AS samples,

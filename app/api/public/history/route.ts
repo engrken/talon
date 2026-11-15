@@ -8,7 +8,7 @@ export async function GET(request:Request){
  const device=await firstDevice();if(!device)return noStore({rows:[]});
  const sql=database();
  const rows=await sql`SELECT received_at AS observed_at,volts,amps,watts,
-  delta_wh,energy_wh,status FROM solar_readings WHERE device_id=${device.id}
+  delta_wh,energy_wh,status,measurement_quality FROM solar_readings WHERE device_id=${device.id}
   AND received_at>=(${day}::date::timestamp AT TIME ZONE 'Asia/Manila')
   AND received_at<((${day}::date+1)::timestamp AT TIME ZONE 'Asia/Manila')
   ORDER BY received_at DESC LIMIT 1500`;

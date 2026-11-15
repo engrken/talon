@@ -107,3 +107,6 @@ CREATE TABLE IF NOT EXISTS solar_remote_calibrations (
  output TEXT
 );
 CREATE INDEX IF NOT EXISTS solar_remote_cal_device_idx ON solar_remote_calibrations(device_id,id DESC);
+
+-- r7 measured-quality traceability (new readings only, history preserved).
+ALTER TABLE solar_readings ADD COLUMN IF NOT EXISTS measurement_quality TEXT NOT NULL DEFAULT 'LEGACY_UNSPECIFIED';

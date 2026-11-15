@@ -22,8 +22,8 @@ export async function POST(request:Request){
   const prior=await sql`SELECT energy_wh FROM solar_readings WHERE device_id=${id} AND boot_id=${reading.bootId} ORDER BY seq DESC LIMIT 1`;
   const previous=prior[0]?Number(prior[0].energy_wh):null;
   const delta=nextEnergyDeltaWh(previous,reading.energyWh,reading.seq);
-  const result=await sql`INSERT INTO solar_readings(device_id,boot_id,seq,volts,amps,watts,energy_wh,delta_wh,status)
-   VALUES(${id},${reading.bootId},${reading.seq},${reading.volts},${reading.amps},${reading.watts},${reading.energyWh},${delta},${reading.status})
+  const result=await sql`INSERT INTO solar_readings(device_id,boot_id,seq,volts,amps,watts,energy_wh,delta_wh,status,measurement_quality)
+   VALUES(${id},${reading.bootId},${reading.seq},${reading.volts},${reading.amps},${reading.watts},${reading.energyWh},${delta},${reading.status},${reading.quality})
    ON CONFLICT(device_id,boot_id,seq) DO NOTHING RETURNING id`;
   inserted=result.length===1;
  }

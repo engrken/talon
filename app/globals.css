@@ -240,3 +240,99 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:620px){.page{padding:0 14px}.topnav{min-height:78px;padding:12px 0;align-items:center}.brand-logo{width:185px;max-width:44vw}.navright{gap:6px 10px}.navlink{font-size:11px}.admin-nav{padding:7px 8px}.hero{margin:20px 0}.hero h1{font-size:31px}.hero p{font-size:13px}.hero-meta{font-size:11px;gap:9px}.statusbox{margin-top:1px}.dashboard-toolbar{align-items:flex-start;flex-wrap:wrap}.refresh-button{width:100%}.stats{gap:9px}.metriccard{min-height:153px;padding:14px}.metriccard strong{font-size:21px}.metriccard span{font-size:11px}.metriccard small{font-size:10px}.insight-strip{grid-template-columns:1fr;gap:8px}.insight-strip>div{padding:11px 14px}.insight-strip strong{font-size:16px}.middlegrid{gap:12px}.date-actions{width:100%}.date-actions input{min-width:0;flex:1}.date-actions .action{white-space:nowrap}.chart-subheading{margin-top:12px}.tabs{gap:5px}.tabs button{font-size:11px;padding:8px 10px}.panel{padding:16px}.chartwrap{height:238px}.chartwrap.smaller{height:230px;margin-top:18px}.totalstrip{padding:13px}.totalstrip strong{font-size:14px}.report-tabs button{font-size:11px}.report-kpi strong{font-size:17px}}
 @media(max-width:380px){.brand-logo{max-width:39vw}.navlink{font-size:10px}.metriccard strong{font-size:19px}.metriccard .metricicon{width:31px;height:31px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition-duration:.01ms!important}}
+
+
+/* Talon visual overhaul: dark editorial hero, flagship readout and actionable diagnostics */
+.page{max-width:1400px}
+.topnav{background:rgba(255,255,255,.85);border:1px solid #e2ebe5;border-radius:0 0 17px 17px;padding:0 24px;box-shadow:0 3px 18px #1b422409}
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:272px;padding:37px 39px;border-radius:21px;background:linear-gradient(117deg,#102b28 0%,#135540 68%,#157859 100%);box-shadow:0 20px 48px #0e47371a;align-items:center}
+.hero:before{content:"";position:absolute;z-index:-1;right:14%;top:-145px;width:415px;height:415px;border-radius:50%;border:70px solid #ffffff0a}
+.hero:after{content:"";position:absolute;z-index:-1;right:-100px;bottom:-185px;width:385px;height:385px;background:radial-gradient(circle,#a9f08a23 0,transparent 68%);border-radius:50%}
+.hero .eyebrow{color:#a8e4c4;font-size:11px}.hero .point{background:#c4f493}
+.hero h1{font-size:clamp(34px,4.2vw,53px);color:#fff;max-width:650px;margin:16px 0 12px;letter-spacing:-.045em}
+.hero h1 span{color:#b7f1bf}.hero p{color:#d5eae0;font-size:15px;line-height:1.75}
+.hero-meta{color:#c7edda;margin-top:22px}.hero-meta svg{color:#b4f3b5}
+.hero .statusbox{flex:0 0 295px;min-width:0;max-width:340px;position:relative;padding:23px;border:1px solid #d7f3e7;background:#fffffff7;box-shadow:0 18px 35px #041d1b33;border-radius:17px}
+.hero .statusbox.active{border-color:#b2efd2}
+.hero .statusbox .statusicon{padding:11px;background:#e5f7ee}
+.hero .statusbox strong{font-size:15px;color:#164531;line-height:1.35}.hero .statusbox small{font-size:12px;margin:9px 0}
+.hero .statusmode{padding-top:8px;border-top:1px solid #e1eee4;line-height:1.5}
+.dashboard-toolbar{margin-top:19px;margin-bottom:17px}
+.metriccard{border:1px solid #dce9e2;border-radius:15px;padding:22px;min-height:170px;background:#fff;box-shadow:0 6px 25px #1d46300a;transition:box-shadow .2s,border-color .2s,transform .2s}
+.metriccard:hover{border-color:#aed7c0;box-shadow:0 12px 28px #12452a13;transform:translateY(-2px)}
+.metriccard .metricicon{background:#e6f4eb;color:#137f60;border-radius:10px}
+.metriccard span{font-size:12px;letter-spacing:.005em}.metriccard strong{color:#193e30;font-size:clamp(24px,2.35vw,34px)}
+.metriccard:first-child{background:linear-gradient(130deg,#0b3d31,#146c51);border-color:#1b674b;color:#fff}
+.metriccard:first-child .metricicon{color:#eaffd5;background:#ffffff25}
+.metriccard:first-child span,.metriccard:first-child strong{color:#fff}
+.metriccard:first-child small{color:#d0ead9}
+.metriccard:nth-child(4){background:#f0f9f2;border-color:#d1e8d7}
+.insight-strip{gap:13px;margin-top:13px}
+.insight-strip>div{border:1px solid #dcebe2;background:#fff;box-shadow:0 4px 12px #1f483007}
+.insight-strip strong{font-size:20px;color:#1b674c}
+.panel{border-radius:17px;box-shadow:0 6px 23px #1c4d3109}.panelheading h2{font-size:21px}
+.station-health{padding:27px}
+.health-summary{display:flex;align-items:center;gap:16px;border:1px solid #eed7ab;background:#fff9eb;border-radius:13px;padding:17px 19px;margin-top:19px}
+.health-summary.summary-good{background:#ebf7ef;border-color:#cee7d7}
+.health-summary-icon{flex:none;width:43px;height:43px;border-radius:12px;background:#ffedc8;color:#ae711a;display:grid;place-items:center}
+.summary-good .health-summary-icon{background:#d7f1e0;color:#19805d}
+.health-summary-copy{flex:1;min-width:0}
+.health-summary-copy strong{display:block;font-size:15px;color:#624a24}
+.summary-good .health-summary-copy strong{color:#226447}
+.health-summary-copy p{font-size:12px;line-height:1.55;margin:6px 0;color:#725d39}
+.summary-good .health-summary-copy p{color:#466e59}
+.health-summary-copy small{font-size:10px;line-height:1.5;color:#8b7a55}
+.summary-good .health-summary-copy small{color:#6b8b78}
+.health-summary-link{display:inline-flex;align-items:center;gap:7px;border-radius:9px;border:1px solid #dbc594;padding:10px 12px;text-decoration:none;font-size:11px;font-weight:800;white-space:nowrap;background:#fff}
+.health-summary-link:hover{background:#f0f8ed}
+.health-group-title{display:flex;align-items:center;justify-content:space-between;margin-top:25px;gap:10px}
+.health-group-title h3{margin:0;font-size:15px;color:#244e3c}
+.health-group-title span{font-size:11px;color:#879c90}
+.health-grid{margin-top:12px;gap:12px}
+.health-card{min-height:156px;background:#fff;border:1px solid #dce9e0;border-radius:13px;padding:17px 18px;box-shadow:0 2px 12px #1c482409}
+.health-card .health-card-label{font-weight:700;color:#547364}
+.health-card .health-card-label svg{color:#31856a}
+.health-card strong{font-size:16px;line-height:1.35;color:#214634}
+.health-card.good{border-left:4px solid #18a570;background:#f9fdfb}
+.health-card.warn{border-left:4px solid #e5a23c;background:#fffcf7}
+.health-card.bad{border-left:4px solid #c66359;background:#fffaf9}
+.health-card.unknown{border-left:4px solid #aebcb3}
+.health-card small{font-size:11px;color:#71877b}
+.troubleshooting{margin-top:28px;padding:23px;border:1px solid #d8e9dd;border-radius:16px;background:linear-gradient(180deg,#f4faf6,#fff);border-top:1px solid #d8e9dd}
+.troubleshoot-head{align-items:flex-start;gap:13px}
+.troubleshoot-title-icon{flex:none;width:43px;height:43px;display:grid;place-items:center;background:#dff4e5;color:#147d5a;border-radius:12px}
+.troubleshoot-head .eyebrow{color:#568c6c;font-size:10px}
+.troubleshoot-head h3{font-size:19px;margin:5px 0 5px;color:#194b37}
+.troubleshoot-head p{font-size:12px;color:#577466}
+.troubleshoot-items{margin:16px 0 0;gap:12px}
+.troubleshoot-item{background:#fff;border:1px solid #edd9bb;border-left:4px solid #e4ae56;border-radius:12px;padding:17px;box-shadow:0 3px 13px #2d483005}
+.troubleshoot-item-title strong{font-size:13px}.troubleshoot-item p{color:#557061}
+.troubleshoot-item .troubleshoot-guide-link{margin-top:13px}
+.troubleshoot-clear{padding:16px 17px;margin:15px 0 4px;border:1px solid #c6e6d2;border-radius:11px;font-size:12px;color:#296949;background:#edf9f0}
+.troubleshoot-footer{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;gap:12px;margin-top:20px}
+.troubleshoot-safety{display:flex;gap:11px;padding:14px 16px;background:#fff8e8;border:1px solid #eedbb3;border-radius:11px;color:#8d591c}
+.troubleshoot-safety svg{flex:none;margin-top:1px}
+.troubleshoot-safety strong{display:block;font-size:12px;color:#7e541e}
+.troubleshoot-safety span{display:block;margin-top:4px;font-size:11px;line-height:1.55;color:#725c3c}
+.troubleshoot-guide-cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;background:#135c46;color:#fff;font-size:12px;line-height:1.35;font-weight:800;padding:13px 17px;border-radius:11px;max-width:275px;text-align:center}
+.troubleshoot-guide-cta:hover{background:#0c4735}.troubleshoot-guide-cta svg{flex:none}
+.health-history-drawer{margin-top:24px;border:1px solid #d8e7dd;border-radius:12px;overflow:hidden}
+.health-history-drawer>summary{display:flex;align-items:center;justify-content:space-between;padding:17px 19px;gap:20px;background:#f5f9f6;cursor:pointer;list-style:none}
+.health-history-drawer>summary::-webkit-details-marker{display:none}
+.health-history-drawer>summary>span strong{font-size:13px;color:#28674c}
+.health-history-drawer>summary>span small{display:block;font-size:11px;color:#718a7a;margin-top:4px}
+.health-history-drawer>summary svg{color:#36775b;flex:none;transition:transform .2s}
+.health-history-drawer[open]>summary svg{transform:rotate(180deg)}
+.health-history-drawer .health-history-content{padding:18px;background:#fff}
+.health-history-title{margin:0}
+.reports-panel{border-top:4px solid #168b67}
+.reports-panel .report-tabs button{border-radius:9px;padding:10px 16px}
+.reports-panel .report-kpi{background:#fff;border:1px solid #e0eae3}
+.reports-panel .report-kpi:first-child{background:#eff8f2;border-color:#cde8d7}
+.reports-panel .report-kpi strong{font-size:23px;color:#194c37}
+.reports-panel .report-coverage{background:#f6faf7}
+.reports-panel .report-chart{background:#fff}
+@media(max-width:1080px){.health-summary{flex-wrap:wrap}.health-summary-link{margin-left:57px}}
+@media(max-width:900px){.hero{min-height:unset}.hero .statusbox{flex:1;max-width:100%;width:100%}}
+@media(max-width:650px){.topnav{padding:7px 11px}.hero{padding:24px 20px;border-radius:15px}.hero:before{right:-210px;top:-220px}.hero h1{font-size:35px}.hero p{font-size:13px}.hero-meta{margin-top:17px}.hero .statusbox{padding:16px;margin-top:12px}.metriccard{padding:16px;min-height:161px}.metriccard strong{font-size:23px}.insight-strip{gap:9px}.insight-strip strong{font-size:18px}.station-health{padding:16px}.health-summary{gap:11px;padding:14px}.health-summary-icon{width:36px;height:36px}.health-summary-link{margin:0;width:100%;justify-content:center}.health-grid{grid-template-columns:1fr}.health-card{min-height:unset;padding:14px 16px}.troubleshooting{padding:15px;margin-top:20px}.troubleshoot-head h3{font-size:17px}.troubleshoot-footer{grid-template-columns:1fr}.troubleshoot-guide-cta{max-width:none;min-height:48px}.health-history-drawer>summary{padding:15px}.health-history-drawer .health-history-content{padding:12px}}
+@media(prefers-reduced-motion:reduce){.metriccard:hover{transform:none}}

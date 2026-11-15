@@ -1,7 +1,7 @@
 'use client';
 import {useEffect,useState} from 'react';
 import Troubleshooting from '@/components/Troubleshooting';
-import {Activity,Wifi,WifiOff,Monitor,PlugZap,RefreshCw} from 'lucide-react';
+import {Activity,Wifi,WifiOff,Monitor,PlugZap,RefreshCw,ShieldCheck,ShieldAlert,ChevronDown,BookOpen} from 'lucide-react';
 type Channel='OK'|'CHECK'|'UNKNOWN'|'NO_INPUT';
 type Mode='OPERATIONAL'|'EXPERIMENTAL'|'UNVERIFIED'|'NO_SUPPLY';
 type Health={seen_at:string;firmware:string;uptime_seconds:number;wifi_rssi_dbm:number;lcd_initialized:boolean;sensor_verified:boolean;supply_present:boolean;sensor_fault:string;station_status:string;cloud_last_result:string;current_status?:Channel;voltage_status?:Channel;supply_mode?:Mode;low_current_estimate?:boolean;acs_vcc_monitor_enabled?:boolean;acs_vcc_healthy?:boolean;acs_vcc_v?:number};
@@ -30,9 +30,12 @@ export default function StationHealth({health,lastSeen}:{health?:Health|null;las
  const mode=h?.supply_mode || 'UNVERIFIED';
  const current=h?.current_status;
  const voltage=h?.voltage_status;
+ const checksOk=!!h&&h.sensor_verified&&h.lcd_initialized&&h.cloud_last_result!=='ERROR'&&(current===undefined||current==='OK')&&(voltage===undefined||voltage==='OK');
+ const healthMessage=!online?'The station has not contacted the cloud recently. Check power and connectivity.':!h?'A new heartbeat is needed to verify sensor and controller status.':checksOk?'Recent telemetry reports verified sensor channels and an initialized LCD.':'One or more health checks require attention. Review the details below.';
  return <section className="panel station-health" aria-label="Station health and historical status">
   <div className="panelheading"><div><span className="eyebrow">HARDWARE & CONNECTIVITY</span><h2>ESP32 and measured supply status</h2></div><span className="muted"><RefreshCw size={13}/> Last heartbeat: {when(health?.seen_at||lastSeen)}</span></div>
-  <p className="fineprint">The ESP32 reports approximately every minute. Statuses are signal plausibility checks, not conclusive hardware self-tests. Equipment without sensors is excluded.</p>
+  <div className={'health-summary '+(checksOk?'summary-good':'summary-review')} role="status"><div className="health-summary-icon">{checksOk?<ShieldCheck size={23}/>:<ShieldAlert size={23}/>}</div><div className="health-summary-copy"><strong>{checksOk?'Measurements verified':'Station status requires review'}</strong><p>{healthMessage}</p><small>Last controller contact: {when(health?.seen_at||lastSeen)} · These are signal checks, not physical hardware self-tests</small></div><a href="/guide#diagnostics" className="health-summary-link"><BookOpen size={16}/> Diagnostics guide</a></div>
+  <div className="health-group-title"><h3>Component diagnostics</h3><span>6 monitoring areas</span></div>
   <div className="health-grid">
    <StatusCard icon={<Activity size={20}/>} label="ESP32 controller" value={online?'Online':'Offline / not reporting'} state={online?'good':'bad'} detail={h?'Firmware '+h.firmware+' · uptime '+Math.floor(h.uptime_seconds/60)+' minutes':'Waiting for authenticated heartbeat'}/>
    <StatusCard icon={online?<Wifi size={20}/>:<WifiOff size={20}/>} label="Internet / WebApp" value={online?'Cloud contact verified':'No recent cloud contact'} state={online?'good':'bad'} detail={h?'Wi-Fi RSSI '+h.wifi_rssi_dbm+' dBm · prior upload '+words(h.cloud_last_result):'Local Wi-Fi cannot be confirmed remotely'}/>
@@ -43,13 +46,14 @@ export default function StationHealth({health,lastSeen}:{health?:Health|null;las
   </div>
   {h?.acs_vcc_monitor_enabled&&<div className="vcc-health-note"><strong>ACS712 sensor 5 V supply:</strong> {h.acs_vcc_monitor_enabled ? h.acs_vcc_healthy ? Number(h.acs_vcc_v||0).toFixed(3)+' V • compensation active' : 'CHECK sensor VCC / GPIO32 divider (out of range)' : 'Optional GPIO32 VCC sensing not enabled (existing calibration in use)'}<small>Load-bus 5 V or 12 V is separate from the ACS712 5 V sensor supply.</small></div>}
   <Troubleshooting health={h} online={online} lastSeen={lastSeen}/>
-  <div className="panelheading health-history-title"><div><span className="eyebrow">STATUS AUDIT LOG</span><h2>Historical station status</h2></div><label className="history-controls">Rows <select aria-label="Status log page size" value={limit} onChange={e=>{setLimit(Number(e.target.value));setPage(1)}}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select></label></div>
+  <details className="health-history-drawer"><summary><span><strong>Historical station events</strong><small>Review firmware, connectivity and sensor-state changes ({history.total} recorded events)</small></span><ChevronDown size={20}/></summary>
+  <div className="health-history-content"><div className="panelheading health-history-title"><div><span className="eyebrow">STATUS AUDIT LOG</span><h2>Event history</h2></div><label className="history-controls">Rows <select aria-label="Status log page size" value={limit} onChange={e=>{setLimit(Number(e.target.value));setPage(1)}}><option value={10}>10</option><option value={20}>20</option><option value={50}>50</option></select></label></div>
   {error&&<p className="noticeline">{error}</p>}
   <div className="tablewrap"><table><thead><tr><th>Time (PHT)</th><th>Event</th><th>Supply mode</th><th>Current sensor</th><th>Voltage sensor</th><th>LCD</th><th>Wi-Fi RSSI</th><th>Firmware</th></tr></thead><tbody>
   {history.rows.map((r,i)=><tr key={r.received_at+i}><td>{when(r.received_at)}</td><td>{words(r.event_type)}</td><td><span className={'pill '+(['OK','EXPERIMENTAL'].includes(r.station_status)?'good':'warning')}>{r.supply_mode==='EXPERIMENTAL'?'Experimental 5 V':r.supply_mode==='OPERATIONAL'?'Operational 12 V':bus(r.station_status)}</span></td><td>{r.current_status&&r.current_status!=='UNKNOWN'?words(r.current_status):r.sensor_fault==='NEG_CURRENT'?'Negative current (legacy)':r.sensor_verified?'Legacy combined OK':'Not separately reported'}</td><td>{r.voltage_status&&r.voltage_status!=='UNKNOWN'?words(r.voltage_status):'Not separately reported'}</td><td>{r.lcd_initialized?'Initialized':'Init failed'}</td><td>{r.wifi_rssi_dbm} dBm</td><td>{r.firmware}</td></tr>)}
   {!history.rows.length&&<tr><td colSpan={8} className="tableempty">No status reports yet; logs begin after a compatible ESP32 heartbeat.</td></tr>}
   </tbody></table></div>
-  <div className="pagination"><span>{history.total} records · Page {history.page} of {Math.max(1,history.pages)}</span><div><button type="button" disabled={page<=1} onClick={()=>setPage(v=>v-1)}>Previous</button><button type="button" disabled={page>=history.pages} onClick={()=>setPage(v=>v+1)}>Next</button></div></div>
+  <div className="pagination"><span>{history.total} records · Page {history.page} of {Math.max(1,history.pages)}</span><div><button type="button" disabled={page<=1} onClick={()=>setPage(v=>v-1)}>Previous</button><button type="button" disabled={page>=history.pages} onClick={()=>setPage(v=>v+1)}>Next</button></div></div></div></details>
  </section>
 }
 function StatusCard({icon,label,value,state,detail}:{icon:React.ReactNode;label:string;value:string;state:'good'|'warn'|'bad'|'unknown';detail:string}){return <div className={'health-card '+state}><div className="health-card-label">{icon}<span>{label}</span></div><strong>{value}</strong><small>{detail}</small></div>}

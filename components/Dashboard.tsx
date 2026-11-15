@@ -54,9 +54,9 @@ export default function Dashboard(){
   {error&&<div className="notice">Could not retrieve the cloud data: {error}</div>}
   {!loading&&!overview?.device&&<div className="notice">No station has been provisioned yet. Deploy the database and register the ESP32 through the <a href="/admin">administrator page</a>. The dashboard will update after the first upload.</div>}
   <section className="stats" aria-label="Key station statistics">
+   <Metric icon={<Zap size={19}/>} label="Charging power" value={validVoltage&&validCurrent?Number(latest!.watts).toFixed(2)+' W':'—'} foot="Instantaneous measured converter input power"/>
    <Metric icon={<PlugZap size={19}/>} label="Supply voltage" value={validVoltage?Number(latest!.volts).toFixed(2)+' V':'—'} foot={validVoltage?'Measured at converter input':'Awaiting verified voltage reading'}/>
    <Metric icon={<Activity size={19}/>} label="Charging current" value={validCurrent?Number(latest!.amps).toFixed(3)+' A':'—'} foot={validCurrent?(currentEstimate?'Low-current values are estimates':'Measured aggregate current'):'Current sensor data not verified'}/>
-   <Metric icon={<Zap size={19}/>} label="Charging power" value={validVoltage&&validCurrent?Number(latest!.watts).toFixed(2)+' W':'—'} foot="Instantaneous measured input power"/>
    <Metric icon={<BatteryCharging size={19}/>} label="Energy today" value={todayHasData?(todayWh/1000).toFixed(3)+' kWh':'No data'} foot={todayHasData?Number(today!.samples).toLocaleString('en-PH')+' cloud readings recorded':'Awaiting cloud measurements today'}/>
    <Metric icon={<TrendingUp size={19}/>} label="Peak power today" value={todayHasData&&today?.peak_watts!=null?Number(today.peak_watts).toFixed(1)+' W':'—'} foot="Highest cloud sample recorded today"/>
    <Metric icon={<Sun size={19}/>} label="Today's cost equivalent" value={!todayHasData?'No data':today?.cost_php!=null?peso(Number(today.cost_php)):'Rate not set'} foot={today?.rate!=null?'Estimated at ₱'+Number(today.rate).toFixed(2)+'/kWh':'Estimated grid equivalent, not savings'}/>

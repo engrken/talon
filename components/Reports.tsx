@@ -9,7 +9,7 @@ const ranges:{period:Period;label:string}[]=[{period:'day',label:'Daily (24 hrs)
 const fmt=(v:number|null,decimals=2)=>v===null?'—':new Intl.NumberFormat('en-PH',{minimumFractionDigits:decimals,maximumFractionDigits:decimals}).format(v);
 const php=(v:number|null)=>v===null?'Not available':new Intl.NumberFormat('en-PH',{style:'currency',currency:'PHP'}).format(v);
 function exportCsv(r:Report){
- const header=['Period (PHT)','Energy (kWh)','Avg sampled power (W)','Peak power (W)','Estimated cost (PHP)','Reading count'];
+ const header=['Period (PHT)','Est. energy (kWh)','Avg sampled power (W)','Peak power (W)','Estimated cost (PHP)','Reading count'];
  const data=r.points.map(p=>[p.key,p.energyKwh??'',p.avgWatts??'',p.peakWatts??'',p.costPhp??'',p.samples]);
  const csv=[header,...data].map(row=>row.map(v=>'"'+String(v).replaceAll('"','""')+'"').join(',')).join('\r\n');
  const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
@@ -40,14 +40,14 @@ export default function Reports(){
   <div className="panelheading"><div><span className="eyebrow">ENERGY & CONSUMPTION REPORTS</span><h2>Usage analytics</h2></div>
    <div className="actions"><span className="muted"><RefreshCw size={13}/> {updated||'Waiting for report'}</span>
    <button className="action" type="button" disabled={!report||!hasData} onClick={()=>report&&exportCsv(report)}><Download size={15}/> Export CSV</button></div></div>
-  <p className="fineprint">Reports use cloud readings only. All periods and monthly rates follow Philippine Standard Time (Asia/Manila). Missing measurements are never invented.</p>
+  <p className="fineprint">Reports use cloud readings only. Watts, watt-hours and cost are estimates from the ACS712 sensor, not billing-grade measurements. Small loads below sensor resolution may be missed, particularly on firmware v5.6.0-r6 and newer. All periods and monthly rates follow Philippine Standard Time (Asia/Manila). Missing measurements are never invented.</p>
   <div className="report-tabs" role="group" aria-label="Report period">{ranges.map(x=><button type="button" key={x.period} className={period===x.period?'selected':''} aria-pressed={period===x.period} onClick={()=>setPeriod(x.period)}>{x.label}</button>)}</div>
   {error&&<p className="notice" role="alert">Could not load this report: {error}. Refresh the page or check internet access.</p>}
   {loading&&<p className="muted">Loading {ranges.find(x=>x.period===period)?.label.toLowerCase()} report…</p>}
   {report&&<>
    <p className="report-caption">{report.description} · Last updated {updated} PHT · {report.device?.label||'No registered station'}</p>
    <div className="report-kpis">
-    <ReportKpi icon={<BarChart3 size={19}/>} title="Energy reported" value={hasData?fmt(s!.energyKwh,3)+' kWh':'No readings'} detail="Measured charging supply energy"/>
+    <ReportKpi icon={<BarChart3 size={19}/>} title="Estimated energy" value={hasData?fmt(s!.energyKwh,3)+' kWh':'No readings'} detail="Approximate aggregate DC bus energy"/>
     <ReportKpi icon={<Wallet size={19}/>} title="Grid cost equivalent" value={hasData?php(s!.costPhp):'No readings'} detail={s!.missingRateSamples?'Rate missing for some readings':'Estimated at saved monthly PHP/kWh rate'}/>
     <ReportKpi icon={<Activity size={19}/>} title="Peak sampled power" value={hasData?fmt(s!.peakWatts,1)+' W':'—'} detail={hasData?'Average sampled power: '+fmt(s!.avgWatts,1)+' W':'Awaiting readings'}/>
     <ReportKpi icon={<CalendarDays size={19}/>} title="Reporting coverage" value={s!.reportedSlots+'/'+s!.totalSlots+' slots'} detail={s!.coveragePercent+'% of time buckets contain readings (not uptime)'}/>

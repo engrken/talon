@@ -8,10 +8,16 @@ export async function GET(request:Request){
  const deviceId=new URL(request.url).searchParams.get('deviceId')||'';
  if(!isDeviceId(deviceId))return Response.json({error:'Invalid device'},{status:400,headers:noCache});
  const sql=database();
+ const device=await sql`SELECT d.last_seen,h.firmware,h.remote_diagnostics,h.remote_diagnostics
+   FROM solar_devices d LEFT JOIN solar_device_health h ON h.device_id=d.id
+   WHERE d.id=${deviceId} LIMIT 1`;
+ if(!device.length)return Response.json({error:'Device not found'},{status:404,headers:noCache});
+ const lastSeen=device[0].last_seen;
+ const remoteReady=device[0].remote_diagnostics===true && !!lastSeen && Date.now()-new Date(lastSeen).getTime()<240000;
  const rows=await sql`SELECT id,command,requested_at,completed_at,output,
    CASE WHEN state!='DONE' AND expires_at<=NOW() THEN 'EXPIRED' ELSE state END AS state
    FROM solar_remote_commands WHERE device_id=${deviceId} ORDER BY id DESC LIMIT 20`;
- return Response.json({rows},{headers:noCache});
+ return Response.json({rows,remoteReady,remoteDiagnostics:device[0].remote_diagnostics===true,firmware:device[0].firmware||null,lastSeen},{headers:noCache});
 }
 export async function POST(request:Request){
  if(!isAdmin(request))return Response.json({error:'Unauthorized'},{status:401,headers:noCache});
@@ -27,10 +33,8 @@ export async function POST(request:Request){
    WHERE d.id=${deviceId} LIMIT 1`;
  if(!device.length||!device[0].last_seen||Date.now()-new Date(device[0].last_seen).getTime()>240000)
    return Response.json({error:'ESP32 must be online to receive a diagnostic request'},{status:409,headers:noCache});
- const firmware=String(device[0].firmware||'');
- const match=firmware.match(/^(\d+)\.(\d+)\./);
- if(!match||Number(match[1])<5||(Number(match[1])===5&&Number(match[2])<7))
-   return Response.json({error:'Flash Talon ESP32 firmware v5.7.0+ before using remote diagnostics'},{status:409,headers:noCache});
+ if(device[0].remote_diagnostics!==true)
+   return Response.json({error:'This device has not reported remote command support. Flash the Talon v5.6.0-r1 remote patch (no extra pins), then wait for a fresh cloud heartbeat.'},{status:409,headers:noCache});
  const pending=await sql`SELECT COUNT(*)::int AS count FROM solar_remote_commands
    WHERE device_id=${deviceId} AND state IN ('QUEUED','CLAIMED') AND expires_at>NOW()`;
  if(Number(pending[0]?.count||0)>0)

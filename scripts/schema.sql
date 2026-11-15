@@ -89,3 +89,6 @@ CREATE TABLE IF NOT EXISTS solar_remote_commands (
  output TEXT
 );
 CREATE INDEX IF NOT EXISTS solar_remote_cmd_device_idx ON solar_remote_commands(device_id,id DESC);
+
+-- v5.6.0-r1 minimal remote diagnostic capability announcement (no GPIO changes).
+ALTER TABLE solar_device_health ADD COLUMN IF NOT EXISTS remote_diagnostics BOOLEAN NOT NULL DEFAULT FALSE;

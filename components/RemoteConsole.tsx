@@ -110,8 +110,8 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
       </div>
       <button className="ghostbutton" type="button" disabled={!canCalibrate} onClick={()=>void send('zc')}>Run 20-burst stability check (zc)</button>
     </div>
-    {latestScan?.state==='DONE'&&latestScan.output&&<div className={'remote-zero-summary '+(latestScan.output.startsWith('CAL_READY')?'remote-zero-summary-ready':'remote-zero-summary-rejected')} role="status">
-       <strong>{latestScan.output.startsWith('CAL_READY')?'Pre-check passed · No calibration saved':'Pre-check rejected · No calibration saved'}</strong>
+    {latestPreflight?.state==='DONE'&&latestPreflight.output&&<div className={'remote-zero-summary '+(latestPreflight.output.startsWith('CAL_READY')?'remote-zero-summary-ready':'remote-zero-summary-rejected')} role="status">
+       <strong>{latestPreflight.output.startsWith('CAL_READY')?'Pre-check passed · No calibration saved':'Pre-check rejected · No calibration saved'}</strong>
        {noiseSummary&&<><p>{noiseReasons[noiseSummary.reason]||'Review the firmware output; the zero reference was not changed.'}</p>
          <dl className="remote-noise-metrics">
            <div><dt>Baseline min / median / max</dt><dd>{noiseSummary.baselineMin} / {noiseSummary.baselineMedian} / {noiseSummary.baselineMax} mV</dd></div>

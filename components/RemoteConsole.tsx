@@ -20,7 +20,7 @@ const noiseReasons:Record<string,string>={
 function parseNoiseSummary(output:string|null):NoiseSummary|null{
  if(!output||!output.startsWith('CAL_'))return null;
  const values:Record<string,string>={};
- for(const match of output.matchAll(/([a-z_]+)=([A-Za-z0-9./-]+)/g))values[match[1]]=match[2];
+ for(const match of output.matchAll(/([A-Za-z_]+)=([A-Za-z0-9._/-]+)/g))values[match[1]]=match[2];
  if(!values.baseline_min_mV||!values.burst_max_mV)return null;
  return {reason:values.reason||'UNKNOWN',baselineMin:values.baseline_min_mV,
   baselineMedian:values.baseline_med_mV,baselineMax:values.baseline_max_mV,

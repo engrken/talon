@@ -9,6 +9,6 @@ test('a failed save consumes its previously passing pre-check, despite a remaini
 });
 test('no saved-calibration success claim for rejected commands',()=>{
  assert.match(code,/zeroActionIsSaved/);
- assert.match(code,/CAL_SAVED/);
+ assert.match(code,/calibrationOutcome/);
  assert.match(code,/The old zero was not overwritten/);
 });

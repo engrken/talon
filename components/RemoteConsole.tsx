@@ -1,6 +1,7 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
 import {Activity,Cloud,RefreshCw,ShieldCheck,Terminal} from 'lucide-react';
+import {calibrationOutcome} from '@/lib/calibration-outcome.mjs';
 type Entry={id:string;command:'h'|'d'|'zc'|'za'|'zr';state:string;requested_at:string;completed_at:string|null;output:string|null};
 type Health={remoteReady:boolean;remoteZeroReady:boolean;remoteDiagnostics:boolean;firmware:string|null;lastSeen:string|null};
 type NoiseSummary={reason:string;baselineMin:string;baselineMedian:string;baselineMax:string;baselineSpread:string;burstMin:string;burstMedian:string;burstMax:string;noisyBursts:string;zeroShift:string};
@@ -89,10 +90,12 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
  // The server treats the first save attempt as consuming the pre-check, even if the ESP32 rejects its fresh ADC measurement.
  const preflightConsumed=!!latestSave&&preflightTime>0&&new Date(latestSave.requested_at).getTime()>=preflightTime;
  const preflightReady=preflightFresh&&!preflightConsumed;
- const noiseSummary=parseNoiseSummary(latestZeroAction?.output||null);
- const zeroActionRejected=latestZeroAction?.output?.startsWith('CAL_REJECTED')===true;
- const zeroActionIsSaved=latestZeroAction?.command==='za'&&latestZeroAction?.output?.startsWith('CAL_SAVED')===true;
- const latestZeroSuccessfulCheck=latestZeroAction?.command==='zc'&&latestZeroAction?.output?.startsWith('CAL_READY')===true;
+ const outcome=calibrationOutcome(latestZeroAction?.command,latestZeroAction?.output);
+ const noiseSummary=['precheck_ready','rejected'].includes(outcome.kind)?parseNoiseSummary(latestZeroAction?.output||null):null;
+ const zeroActionRejected=outcome.kind==='rejected';
+ const zeroActionIsSaved=outcome.kind==='saved';
+ const zeroRollbackComplete=outcome.kind==='rolled_back';
+ const latestZeroSuccessfulCheck=outcome.kind==='precheck_ready';
  return <section className="panel remote-console" aria-label="Remote Talon ESP32 diagnostics">
   <div className="panelheading"><div><span className="eyebrow">SECURE INTERNET DIAGNOSTICS</span><h2><Cloud size={19}/> Remote ESP32 command console</h2></div>
    <span className="calibration-baud">Firmware v5.6 · HTTPS</span></div>
@@ -121,13 +124,17 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
       </div>
       <button className="ghostbutton" type="button" disabled={!canCalibrate} onClick={()=>void send('zc')}>Run 20-burst stability check (zc)</button>
     </div>
-    {latestZeroAction?.state==='DONE'&&latestZeroAction.output&&<div className={'remote-zero-summary '+(latestZeroSuccessfulCheck&&preflightReady||zeroActionIsSaved?'remote-zero-summary-ready':'remote-zero-summary-rejected')} role="status">
+    {latestZeroAction?.state==='DONE'&&latestZeroAction.output&&<div className={'remote-zero-summary '+((latestZeroSuccessfulCheck&&preflightReady)||zeroActionIsSaved||zeroRollbackComplete?'remote-zero-summary-ready':'remote-zero-summary-rejected')} role="status">
        <strong>{
         zeroActionRejected ? (latestZeroAction.command==='za'?'Save attempt rejected · Previous zero preserved':'Pre-check rejected · No calibration saved')
-        : zeroActionIsSaved ? 'Zero calibration saved · Verify with read-only d'
+        : zeroActionIsSaved ? 'Zero calibration successfully saved · Verify with Read ADC (d)'
+        : zeroRollbackComplete ? 'Previous zero calibration restored · Verify with Read ADC (d)'
         : latestZeroSuccessfulCheck ? (preflightReady?'Pre-check passed · Save allowed for 3 minutes':preflightConsumed?'Pre-check consumed · Run a new check before saving again':'Pre-check expired · Run a new check')
         : latestZeroAction.command==='zr'?'Rollback response recorded · Check raw result':'Calibration response recorded · Check raw result'
        }</strong>
+       {zeroActionIsSaved&&<p><strong>Saved reference: {outcome.savedMv!==null?outcome.savedMv.toFixed(2)+' mV':'Updated on ESP32'}</strong>
+        {outcome.backupMv!==null?' · Previous reference backed up: '+outcome.backupMv.toFixed(2)+' mV':''}. The ESP32 acknowledged the save. This confirms the zero reference was stored, not that current-gain or energy accuracy is certified. Use Read ADC (d) with no load, then compare against an independent meter under a known 12 V load.</p>}
+       {zeroRollbackComplete&&<p>The ESP32 acknowledged restoring the previous zero reference. Run Read ADC (d) to verify the active baseline before collecting new energy estimates.</p>}
        {latestZeroAction.command==='za'&&zeroActionRejected&&<p>The save command was received inside its allowed window, but the ESP32 performed a fresh stability test and rejected excessive ADC noise. The old zero was not overwritten. This attempt consumes the pre-check authorization.</p>}
        {latestZeroSuccessfulCheck&&preflightReady&&<p>Authorization expires at {new Date(preflightTime+180000).toLocaleTimeString('en-PH',{timeZone:'Asia/Manila'})} PHT. The ESP32 repeats the ADC safety test when you save and may still reject it.</p>}
        {latestZeroSuccessfulCheck&&!preflightReady&&<p>{preflightConsumed?'The prior save attempt used this pre-check.':'More than 3 minutes have elapsed since the completed pre-check.'} A fresh CAL_READY result is required before the next save attempt.</p>}
@@ -139,7 +146,7 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
            <div><dt>Noisy bursts</dt><dd>{noiseSummary.noisyBursts} <small>(each burst limit 8 mV)</small></dd></div>
            <div><dt>Zero offset shift</dt><dd>{noiseSummary.zeroShift} mV</dd></div>
          </dl></>}
-       {!noiseSummary&&<p>Firmware did not return detailed v5.6.0-r5 statistics. See the raw response below for the rejection reason.</p>}
+       {['precheck_ready','rejected'].includes(outcome.kind)&&!noiseSummary&&<p>Detailed 20-burst statistics are not available for this response. See the raw output below for the device's result.</p>}
     </div>}
     {deviceHealth?.remoteZeroReady&&<fieldset className="remote-zero-verification">
       <legend>Step 2 · Operator verification (only after a successful pre-check)</legend>
@@ -155,7 +162,7 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
         <button className="primarybutton" type="button" disabled={!canCalibrate||!preflightReady||!noCurrentConfirmed||confirmation!=='ZERO '+deviceId} onClick={()=>void send('za')}>Save verified zero (za)</button>
         <button className="ghostbutton" type="button" disabled={!canCalibrate||!noCurrentConfirmed||confirmation!=='ROLLBACK '+deviceId} onClick={()=>void send('zr')}>Restore previous zero (zr)</button>
       </div>
-      {!preflightReady&&<p className="fineprint">{preflightConsumed?'A previous save attempt consumed the pre-check, even if the ADC safety check rejected that save. Run a new stability pre-check before another attempt.':'Saving a new zero requires a CAL_READY pre-check completed within the last 3 minutes. Rejected or expired checks never unlock saving.'}</p>}
+      {!preflightReady&&<p className="fineprint">{preflightConsumed?(zeroActionIsSaved?'Zero calibration was saved successfully. Run a new stability pre-check only if another zero-calibration save is needed.':'A previous save attempt consumed the pre-check, even if the ADC safety check rejected that save. Run a new stability pre-check before another attempt.'):'Saving a new zero requires a CAL_READY pre-check completed within the last 3 minutes. Rejected or expired checks never unlock saving.'}</p>}
     </fieldset>}
   </section>}
   {error&&<p className="noticeline" role="alert">{error}</p>}

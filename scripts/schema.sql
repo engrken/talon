@@ -92,3 +92,18 @@ CREATE INDEX IF NOT EXISTS solar_remote_cmd_device_idx ON solar_remote_commands(
 
 -- v5.6.0-r1 minimal remote diagnostic capability announcement (no GPIO changes).
 ALTER TABLE solar_device_health ADD COLUMN IF NOT EXISTS remote_diagnostics BOOLEAN NOT NULL DEFAULT FALSE;
+
+-- Safe remote zero-current calibration (v5.6.0-r3), additive and separate from the existing h/d queue.
+ALTER TABLE solar_device_health ADD COLUMN IF NOT EXISTS remote_zero_calibration BOOLEAN NOT NULL DEFAULT FALSE;
+CREATE TABLE IF NOT EXISTS solar_remote_calibrations (
+ id BIGSERIAL PRIMARY KEY,
+ device_id TEXT NOT NULL REFERENCES solar_devices(id) ON DELETE CASCADE,
+ command TEXT NOT NULL CHECK (command IN ('zc','za','zr')),
+ state TEXT NOT NULL DEFAULT 'QUEUED' CHECK (state IN ('QUEUED','CLAIMED','DONE','EXPIRED')),
+ requested_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+ expires_at TIMESTAMPTZ NOT NULL DEFAULT (NOW()+INTERVAL '3 minutes'),
+ claimed_at TIMESTAMPTZ,
+ completed_at TIMESTAMPTZ,
+ output TEXT
+);
+CREATE INDEX IF NOT EXISTS solar_remote_cal_device_idx ON solar_remote_calibrations(device_id,id DESC);

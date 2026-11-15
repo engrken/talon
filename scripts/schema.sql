@@ -110,3 +110,14 @@ CREATE INDEX IF NOT EXISTS solar_remote_cal_device_idx ON solar_remote_calibrati
 
 -- r7 measured-quality traceability (new readings only, history preserved).
 ALTER TABLE solar_readings ADD COLUMN IF NOT EXISTS measurement_quality TEXT NOT NULL DEFAULT 'LEGACY_UNSPECIFIED';
+
+-- Manual, device-scoped deletion audit. Not part of ordinary removable logs.
+CREATE TABLE IF NOT EXISTS solar_log_cleanup_audit (
+ id BIGSERIAL PRIMARY KEY,
+ device_id TEXT NOT NULL REFERENCES solar_devices(id) ON DELETE CASCADE,
+ scope TEXT NOT NULL CHECK (scope IN ('diagnostics','calibrations','status','telemetry')),
+ older_than_days INTEGER NOT NULL CHECK (older_than_days IN (0,7,30,90)),
+ deleted_count INTEGER NOT NULL CHECK (deleted_count>0),
+ cleared_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS solar_log_cleanup_audit_device_idx ON solar_log_cleanup_audit(device_id,id DESC);

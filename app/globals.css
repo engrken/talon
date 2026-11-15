@@ -431,3 +431,29 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 .remote-zero-buttons button{margin:0}
 @media(max-width:620px){.remote-zero-panel{padding:14px}.remote-zero-heading{gap:10px}.remote-zero-check-panel{align-items:stretch}.remote-zero-check-panel button{width:100%;justify-content:center}.remote-zero-buttons button{width:100%;justify-content:center}.remote-noise-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:390px){.remote-noise-metrics{grid-template-columns:1fr}}
+
+/* Administratively scoped Neon log cleanup, with deliberate per-module confirmation. */
+.log-maintenance{margin-top:20px}
+.log-management-toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;margin:18px 0}
+.log-management-toolbar>button{margin:0;display:flex;align-items:center;gap:6px}
+.log-management-toolbar label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--muted);min-width:160px;flex:1}
+.log-management-toolbar select{min-height:40px;padding:9px;border:1px solid var(--line);border-radius:8px;background:white;color:var(--ink);max-width:100%}
+.log-management-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:18px 0}
+.log-management-area{border:1px solid var(--line);background:#fbfdfb;border-radius:12px;padding:16px;display:flex;flex-direction:column;align-items:flex-start;gap:9px;min-width:0}
+.log-management-area.high-risk{border-color:#e9cdbf;background:#fffbf9}
+.log-management-area-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;flex-wrap:wrap;width:100%}
+.log-management-area-head strong{font-size:14px;line-height:1.4}
+.log-management-area-head span{font-size:11px;font-weight:800;border:1px solid #dcebe1;border-radius:99px;padding:4px 9px;color:#246a4b;background:#ecf6ef;white-space:nowrap}
+.log-management-area p{font-size:12px;color:var(--ink);margin:0;line-height:1.55}
+.log-management-area small{font-size:11px;color:var(--muted);line-height:1.55;flex:1}
+.log-management-area button{display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0 0}
+.log-management-confirm{padding:17px;border-radius:11px;border:1px solid #e4ad92;background:#fff8f3;margin:15px 0}
+.log-management-confirm>strong{display:flex;align-items:center;gap:8px;color:#934c2b}
+.log-management-confirm>p{font-size:12px;line-height:1.6;color:#704e41}
+.log-management-confirm>label{display:block;font-size:12px;margin-top:12px;color:var(--ink)}
+.log-management-confirm label.log-management-ack{display:flex;gap:10px;line-height:1.6;align-items:flex-start}
+.log-management-confirm label.log-management-ack input{flex:none;accent-color:#ab5032;width:16px;height:16px;margin-top:2px}
+.log-management-confirm label:not(.log-management-ack) input{display:block;width:min(100%,520px);border:1px solid #d6bbae;padding:10px;background:white;border-radius:8px;margin-top:7px;font:inherit}
+.log-management-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.log-management-actions>button{margin:0}
+@media(max-width:720px){.log-management-grid{grid-template-columns:1fr}.log-management-toolbar{align-items:stretch}.log-management-toolbar label{width:100%}.log-management-toolbar button{justify-content:center}.log-management-actions button{width:100%}}

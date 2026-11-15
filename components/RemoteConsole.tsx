@@ -96,6 +96,7 @@ export default function RemoteConsole({adminKey}:{adminKey:string}){
  return <section className="panel remote-console" aria-label="Remote Talon ESP32 diagnostics">
   <div className="panelheading"><div><span className="eyebrow">SECURE INTERNET DIAGNOSTICS</span><h2><Cloud size={19}/> Remote ESP32 command console</h2></div>
    <span className="calibration-baud">Firmware v5.6 · HTTPS</span></div>
+  <p className="fineprint">Clear completed diagnostic or calibration test logs in <a href="/admin#log-maintenance">Storage &amp; Log Management</a>. Pending commands and stored ESP32 calibration are not removed.</p>
   <p className="fineprint">ESP32 initiates authenticated HTTPS requests over Wi-Fi. The <code>h</code> and <code>d</code> commands remain read-only; no laptop USB connection, extra pins, or open inbound ports are required.</p>
   {verified&&deviceId&&deviceHealth&&<p className="fineprint" role="status"><strong>Device firmware:</strong> {deviceHealth.firmware||'Not reported'} · <strong>Remote diagnostics:</strong> {deviceHealth.remoteReady?'Online and ready':deviceHealth.remoteDiagnostics?'Supported, device offline':'Requires v5.6 remote patch'}{deviceHealth.lastSeen?' · Last contact '+new Date(deviceHealth.lastSeen).toLocaleString('en-PH',{timeZone:'Asia/Manila'}):''}</p>}
   <div className="remote-controls">

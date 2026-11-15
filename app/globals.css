@@ -561,3 +561,41 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
  .remote-mobile-toggle{padding:9px 8px}
 }
 @media(prefers-reduced-motion:reduce){.remote-mobile-toggle svg{transition:none}}
+
+
+/* Public Talon navigation: remains visible while scrolling the entire dashboard.
+   Sticky stays within .page, which owns the whole dashboard; no fixed overlay is
+   needed and scroll anchors retain a clear top margin. */
+.page>.topnav{
+ position:sticky;top:0;z-index:75;isolation:isolate;min-width:0;
+ background:rgba(255,255,255,.97);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+ border-color:#dceae1;box-shadow:0 9px 27px rgba(18,60,43,.13);
+}
+.page>.topnav .brand{flex:none;min-width:0}
+.page>.topnav .navright{min-width:0}
+.page>.topnav .navlink{min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+.page #monitoring,.page #visual-analytics,.page #reports,.page #health,.page #records{scroll-margin-top:112px}
+@media(min-width:901px){
+ .page>.topnav .navright{flex-wrap:nowrap;gap:clamp(9px,1.35vw,19px)}
+}
+@media(max-width:900px){
+ .page>.topnav{gap:10px;padding:9px 12px;min-height:72px}
+ .page>.topnav .brand-logo{width:175px;max-width:39vw}
+ .page>.topnav .navright{
+  display:flex;flex:1;justify-content:flex-start;flex-wrap:nowrap;gap:10px;
+  overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;min-width:0;
+  -webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;
+ }
+ .page>.topnav .navlink{flex-shrink:0;padding:7px 3px;white-space:nowrap;min-height:44px}
+ .page>.topnav .admin-nav{padding:8px 11px}
+ .page #monitoring,.page #visual-analytics,.page #reports,.page #health,.page #records{scroll-margin-top:94px}
+}
+@media(max-width:520px){
+ .page>.topnav{gap:8px;min-height:65px;padding:7px 9px;border-radius:0 0 12px 12px}
+ .page>.topnav .brand-logo{width:139px;max-width:38vw}
+ .page>.topnav .navright{gap:9px}
+ .page>.topnav .navlink{font-size:11px}
+}
+@media(prefers-reduced-transparency:reduce){
+ .page>.topnav{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none}
+}

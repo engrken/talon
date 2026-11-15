@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {validateCleanupRequest,expectedCleanupPhrase,CLEANUP_SCOPES} from '../lib/log-cleanup.mjs';
 const id='TALON-SOLAR-001';
 test('individual module authorization requires exact device phrase and acknowledgment',()=>{
@@ -17,7 +18,7 @@ test('limits retention filter and blocks unsupported scopes or malformed request
  assert.equal(validateCleanupRequest(null),null);assert.equal(validateCleanupRequest([]),null);
 });
 test('deletion route is independently authenticated, per-module and audit-writing',()=>{
- const s=(await import('node:fs')).readFileSync(new URL('../app/api/admin/logs/route.ts',import.meta.url),'utf8');
+ const s=readFileSync(new URL('../app/api/admin/logs/route.ts',import.meta.url),'utf8');
  assert.match(s,/isAdmin\(request\)/);
  for(const t of ['solar_remote_commands','solar_remote_calibrations','solar_status_history','solar_readings'])assert.match(s,new RegExp('DELETE FROM '+t));
  assert.match(s,/INSERT INTO solar_log_cleanup_audit/);

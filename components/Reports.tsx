@@ -37,7 +37,7 @@ export default function Reports(){
  },[period]);
  const data=report?.points||[],s=report?.summary,hasData=!!s&&s.samples>0;
  return <section className="panel reports-panel" id="reports" aria-label="Solar charging energy reports">
-  <div className="panelheading"><div><span className="eyebrow">ENERGY & CONSUMPTION REPORTS</span><h2>Usage analytics</h2></div>
+  <div className="panelheading"><div><span className="eyebrow">ENERGY & CONSUMPTION REPORTS</span><h2>Usage analytics</h2><a href="/admin#log-maintenance" className="fineprint">Clear testing history (administrator)</a></div>
    <div className="actions"><span className="muted"><RefreshCw size={13}/> {updated||'Waiting for report'}</span>
    <button className="action" type="button" disabled={!report||!hasData} onClick={()=>report&&exportCsv(report)}><Download size={15}/> Export CSV</button></div></div>
   <p className="fineprint">Reports use cloud readings only. Watts, watt-hours and cost are estimates from the ACS712 sensor, not billing-grade measurements. Zero-referenced indicates a verified no-load offset, not a current-gain accuracy certification. Small loads below sensor resolution may be missed, particularly on firmware v5.6.0-r6 and newer. All periods and monthly rates follow Philippine Standard Time (Asia/Manila). Missing measurements are never invented.</p>

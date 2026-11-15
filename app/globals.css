@@ -395,3 +395,39 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 @media(max-width:780px){.flow-steps{grid-template-columns:1fr 1fr;gap:10px}.flow-steps .flow-arrow{display:none}.flow-steps>div{min-height:126px}}
 @media(max-width:560px){.insights-title h2{font-size:21px}.insights-grid{grid-template-columns:1fr}.insight-profile{grid-column:auto}.insight-card{padding:17px}.insight-chart{height:230px}.insight-card>p{min-height:0}.status-donut-wrap{width:180px;height:180px}.energy-flow{padding:18px 16px}.energy-flow h3{font-size:17px}.flow-steps{gap:8px}.flow-steps>div{padding:12px 8px;min-height:120px}.flow-steps small{font-size:10px}.report-coverage{gap:13px}.coverage-dial{width:94px;height:94px}.coverage-dial>span{width:72px;height:72px}.coverage-dial strong{font-size:19px}.coverage-dial small{font-size:8px}.report-coverage-head{flex-wrap:wrap}.flow-foot span{align-items:flex-start}}
 @media(prefers-reduced-motion:reduce){.hour-cell,.insight-card{transition:none}}
+
+/* Talon remote zero calibration - clear staged controls and noise statistics */
+.remote-zero-panel{border:1px solid var(--line);border-radius:14px;padding:19px;background:#f9fcfa;margin:18px 0;min-width:0}
+.remote-zero-panel h3{font-size:17px;line-height:1.35;margin:0 0 7px;color:var(--ink)}
+.remote-zero-panel .fineprint{font-size:12px;color:#627c6e;line-height:1.6}
+.remote-zero-heading{display:flex;align-items:start;justify-content:space-between;gap:18px;flex-wrap:wrap}
+.remote-zero-heading>div{flex:1;min-width:220px}
+.remote-zero-capable,.remote-zero-unavailable{font-size:11px;font-weight:750;padding:7px 10px;border-radius:7px;white-space:normal}
+.remote-zero-capable{color:#13774d;background:#e3f4e9}
+.remote-zero-unavailable{color:#87673c;background:#faf1df}
+.remote-zero-check-panel{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;border:1px solid #dce8df;border-radius:10px;background:white;padding:14px;margin:15px 0}
+.remote-zero-check-panel>div{flex:1;min-width:200px}
+.remote-zero-check-panel strong{font-size:13px;color:var(--ink)}
+.remote-zero-check-panel p{margin:6px 0 0}
+.remote-zero-check-panel button{margin:0}
+.remote-zero-summary{padding:15px 16px;border-radius:10px;margin:13px 0}
+.remote-zero-summary strong{font-size:13px}
+.remote-zero-summary p{font-size:12px;line-height:1.6;margin:6px 0 0}
+.remote-zero-summary-ready{background:#ecf8f0;border:1px solid #c2e4cc;color:#196644}
+.remote-zero-summary-rejected{background:#fff8ed;border:1px solid #efd9b3;color:#835620}
+.remote-noise-metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:9px;margin:15px 0 0}
+.remote-noise-metrics>div{background:#ffffffb8;border:1px solid #0000000c;border-radius:8px;padding:10px}
+.remote-noise-metrics dt{font-size:11px;color:#64786b;margin-bottom:5px}
+.remote-noise-metrics dd{font-size:13px;font-weight:750;margin:0;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.remote-noise-metrics dd small{display:block;font-size:10px;font-weight:450;margin-top:3px}
+.remote-zero-verification{margin:15px 0 0;padding:15px;border:1px solid #dce8df;border-radius:10px;background:white;min-width:0}
+.remote-zero-verification legend{font-weight:750;color:var(--ink);font-size:13px;padding:0 8px}
+.remote-zero-checkbox{display:flex;align-items:flex-start;gap:10px;font-size:12px;line-height:1.65;margin:8px 0 15px;color:var(--ink);cursor:pointer}
+.remote-zero-checkbox input{flex:none;width:17px;height:17px;margin-top:1px;accent-color:#148461}
+.remote-zero-phrase{display:block;font-size:12px;line-height:1.6;color:#455c50;margin-bottom:7px}
+.remote-zero-phrase code{background:#ecf3ed;padding:2px 5px;border-radius:4px;overflow-wrap:anywhere}
+.remote-zero-input{width:min(100%,480px);max-width:100%;padding:11px 12px;border:1px solid #bfd6c7;border-radius:8px;background:white;color:var(--ink);font:inherit;font-size:13px}
+.remote-zero-buttons{display:flex;flex-wrap:wrap;gap:9px;margin:12px 0}
+.remote-zero-buttons button{margin:0}
+@media(max-width:620px){.remote-zero-panel{padding:14px}.remote-zero-heading{gap:10px}.remote-zero-check-panel{align-items:stretch}.remote-zero-check-panel button{width:100%;justify-content:center}.remote-zero-buttons button{width:100%;justify-content:center}.remote-noise-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:390px){.remote-noise-metrics{grid-template-columns:1fr}}
